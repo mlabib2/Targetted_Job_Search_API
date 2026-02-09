@@ -26,11 +26,16 @@ class JobDatabase:
         self.conn = sqlite3.connect(self.db_path, check_same_thread=False)
         self.conn.row_factory = sqlite3.Row  # Return dict-like rows
 
-        # Load and execute schema
-        schema_path = Path(__file__).parent / "schema.sql"
-        with open(schema_path) as f:
-            self.conn.executescript(f.read())
-        self.conn.commit()
+        # Check if database is already initialized
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='companies'")
+
+        if not cursor.fetchone():
+            # Database not initialized, run schema
+            schema_path = Path(__file__).parent / "schema.sql"
+            with open(schema_path) as f:
+                self.conn.executescript(f.read())
+            self.conn.commit()
 
     def get_connection(self):
         """Get database connection"""
