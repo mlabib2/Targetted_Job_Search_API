@@ -2,8 +2,14 @@
 .env
 venv/
 env/
+.venv/
+
+# Python
 *.pyc
 __pycache__/
+*.egg-info/
+dist/
+build/
 
 # Database
 *.db
@@ -14,6 +20,7 @@ data/*.csv
 .vscode/
 .idea/
 *.swp
+*.swo
 
 # Logs
 *.log
@@ -21,3 +28,10 @@ logs/
 
 # OS
 .DS_Store
+Thumbs.db
+
+# Claude Code
+.claude/
+
+# Debug files
+*_debug.html
