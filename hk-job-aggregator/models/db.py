@@ -1,47 +1,38 @@
 """
 Clean database interface for HK Job Monitor
-Uses SQLite with proper abstractions
+Uses PostgreSQL (Supabase) with psycopg2
 """
 
-import sqlite3
+import psycopg2
+import psycopg2.extras
 import json
 import hashlib
+import os
 from datetime import datetime
-from typing import List, Dict, Optional, Tuple
-from pathlib import Path
-import pickle
+from typing import List, Dict, Optional
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class JobDatabase:
     """Main database interface"""
 
-    def __init__(self, db_path: str = "data/jobs.db"):
-        self.db_path = db_path
-        Path(db_path).parent.mkdir(parents=True, exist_ok=True)
+    def __init__(self, database_url: str = None):
+        self.database_url = database_url or os.getenv("DATABASE_URL")
+        if not self.database_url:
+            raise ValueError("DATABASE_URL not set in environment or argument")
         self.conn = None
-        self._init_db()
+        self._connect()
 
-    def _init_db(self):
-        """Initialize database with schema"""
-        self.conn = sqlite3.connect(self.db_path, check_same_thread=False)
-        self.conn.row_factory = sqlite3.Row  # Return dict-like rows
+    def _connect(self):
+        """Connect to PostgreSQL"""
+        self.conn = psycopg2.connect(self.database_url)
+        self.conn.autocommit = True
 
-        # Check if database is already initialized
-        cursor = self.conn.cursor()
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='companies'")
-
-        if not cursor.fetchone():
-            # Database not initialized, run schema
-            schema_path = Path(__file__).parent / "schema.sql"
-            with open(schema_path) as f:
-                self.conn.executescript(f.read())
-            self.conn.commit()
-
-    def get_connection(self):
-        """Get database connection"""
-        if self.conn is None:
-            self._init_db()
-        return self.conn
+    def _cursor(self):
+        """Get a dict cursor"""
+        return self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     # ============================================
     # COMPANY OPERATIONS
@@ -49,33 +40,39 @@ class JobDatabase:
 
     def add_company(self, name: str, career_url: str, ats_platform: str = None, notes: str = None) -> int:
         """Add a new company to monitor"""
-        cursor = self.conn.cursor()
-        cursor.execute("""
+        cur = self._cursor()
+        cur.execute("""
             INSERT INTO companies (name, career_url, ats_platform, notes)
-            VALUES (?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s)
+            RETURNING id
         """, (name, career_url, ats_platform, notes))
-        self.conn.commit()
-        return cursor.lastrowid
+        return cur.fetchone()['id']
 
     def get_active_companies(self) -> List[Dict]:
         """Get all active companies to scrape"""
-        cursor = self.conn.cursor()
-        cursor.execute("""
+        cur = self._cursor()
+        cur.execute("""
             SELECT * FROM companies
-            WHERE is_active = 1
+            WHERE is_active = TRUE
             ORDER BY name
         """)
-        return [dict(row) for row in cursor.fetchall()]
+        return [dict(row) for row in cur.fetchall()]
+
+    def get_company_by_name(self, name: str) -> Optional[Dict]:
+        """Get a company by name"""
+        cur = self._cursor()
+        cur.execute("SELECT * FROM companies WHERE name = %s", (name,))
+        row = cur.fetchone()
+        return dict(row) if row else None
 
     def update_company_scraped(self, company_id: int):
         """Update last_scraped_at timestamp"""
-        cursor = self.conn.cursor()
-        cursor.execute("""
+        cur = self._cursor()
+        cur.execute("""
             UPDATE companies
             SET last_scraped_at = CURRENT_TIMESTAMP
-            WHERE id = ?
+            WHERE id = %s
         """, (company_id,))
-        self.conn.commit()
 
     # ============================================
     # JOB OPERATIONS
@@ -87,27 +84,24 @@ class JobDatabase:
         Add a new job (if not duplicate)
         Returns job_id if new, None if duplicate
         """
-        # Generate hash for deduplication
         job_hash = self._generate_job_hash(company_id, title, url)
 
-        # Check if exists
         if self.job_exists(job_hash):
-            # Update last_seen_at
-            self.conn.execute("""
+            cur = self._cursor()
+            cur.execute("""
                 UPDATE jobs SET last_seen_at = CURRENT_TIMESTAMP
-                WHERE job_hash = ?
+                WHERE job_hash = %s
             """, (job_hash,))
-            self.conn.commit()
             return None
 
-        # Insert new job
-        cursor = self.conn.cursor()
-        cursor.execute("""
+        cur = self._cursor()
+        cur.execute("""
             INSERT INTO jobs (
                 company_id, job_hash, title, url, description,
                 location, job_type, requirements, posted_date
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            RETURNING id
         """, (
             company_id, job_hash, title, url, description,
             kwargs.get('location'),
@@ -115,86 +109,100 @@ class JobDatabase:
             kwargs.get('requirements'),
             kwargs.get('posted_date')
         ))
-        self.conn.commit()
-        return cursor.lastrowid
+        return cur.fetchone()['id']
 
     def job_exists(self, job_hash: str) -> bool:
         """Check if job already exists"""
-        cursor = self.conn.cursor()
-        cursor.execute("SELECT 1 FROM jobs WHERE job_hash = ? LIMIT 1", (job_hash,))
-        return cursor.fetchone() is not None
+        cur = self._cursor()
+        cur.execute("SELECT 1 FROM jobs WHERE job_hash = %s LIMIT 1", (job_hash,))
+        return cur.fetchone() is not None
 
     def update_job_match(self, job_id: int, match_score: float, match_reasons: List[str]):
         """Update job matching score and reasons"""
-        cursor = self.conn.cursor()
-        cursor.execute("""
+        cur = self._cursor()
+        cur.execute("""
             UPDATE jobs
-            SET match_score = ?, match_reasons = ?
-            WHERE id = ?
+            SET match_score = %s, match_reasons = %s
+            WHERE id = %s
         """, (match_score, json.dumps(match_reasons), job_id))
-        self.conn.commit()
 
     def mark_job_notified(self, job_id: int):
         """Mark job as notified"""
-        cursor = self.conn.cursor()
-        cursor.execute("""
+        cur = self._cursor()
+        cur.execute("""
             UPDATE jobs
             SET notified_at = CURRENT_TIMESTAMP
-            WHERE id = ?
+            WHERE id = %s
         """, (job_id,))
-        self.conn.commit()
 
     def get_jobs_to_notify(self) -> List[Dict]:
         """Get jobs that match threshold and haven't been notified"""
-        cursor = self.conn.cursor()
-        cursor.execute("SELECT * FROM jobs_to_notify")
-        return [dict(row) for row in cursor.fetchall()]
+        cur = self._cursor()
+        cur.execute("""
+            SELECT j.id, j.title, c.name AS company, j.url,
+                   j.match_score, j.match_reasons, j.first_seen_at
+            FROM jobs j
+            JOIN companies c ON j.company_id = c.id
+            WHERE j.status = 'new'
+              AND j.match_score >= (SELECT match_threshold FROM profile WHERE id = 1)
+              AND j.notified_at IS NULL
+            ORDER BY j.match_score DESC, j.first_seen_at DESC
+        """)
+        return [dict(row) for row in cur.fetchall()]
 
     def mark_job_seen(self, job_id: int):
         """Mark job as seen"""
-        cursor = self.conn.cursor()
-        cursor.execute("""
-            UPDATE jobs SET status = 'seen' WHERE id = ?
-        """, (job_id,))
-        self.conn.commit()
+        cur = self._cursor()
+        cur.execute("UPDATE jobs SET status = 'seen' WHERE id = %s", (job_id,))
+
+    def get_new_jobs(self) -> List[Dict]:
+        """Get all new unscored jobs"""
+        cur = self._cursor()
+        cur.execute("""
+            SELECT j.*, c.name AS company_name
+            FROM jobs j
+            JOIN companies c ON j.company_id = c.id
+            WHERE j.status = 'new' AND j.match_score IS NULL
+            ORDER BY j.first_seen_at DESC
+        """)
+        return [dict(row) for row in cur.fetchall()]
 
     # ============================================
     # PROFILE OPERATIONS
     # ============================================
 
     def update_profile(self, cv_text: str = None, skills: List[str] = None,
-                      embedding: bytes = None, **kwargs):
+                       embedding: bytes = None, **kwargs):
         """Update user profile"""
         updates = []
         params = []
 
         if cv_text:
-            updates.append("cv_text = ?")
+            updates.append("cv_text = %s")
             params.append(cv_text)
         if skills:
-            updates.append("skills = ?")
+            updates.append("skills = %s")
             params.append(json.dumps(skills))
         if embedding:
-            updates.append("embedding = ?")
+            updates.append("embedding = %s")
             params.append(embedding)
         if 'experience_years' in kwargs:
-            updates.append("experience_years = ?")
+            updates.append("experience_years = %s")
             params.append(kwargs['experience_years'])
 
         updates.append("updated_at = CURRENT_TIMESTAMP")
 
         query = f"UPDATE profile SET {', '.join(updates)} WHERE id = 1"
-        self.conn.execute(query, params)
-        self.conn.commit()
+        cur = self._cursor()
+        cur.execute(query, params)
 
     def get_profile(self) -> Dict:
         """Get user profile"""
-        cursor = self.conn.cursor()
-        cursor.execute("SELECT * FROM profile WHERE id = 1")
-        row = cursor.fetchone()
+        cur = self._cursor()
+        cur.execute("SELECT * FROM profile WHERE id = 1")
+        row = cur.fetchone()
         if row:
             profile = dict(row)
-            # Parse JSON fields
             if profile.get('skills'):
                 profile['skills'] = json.loads(profile['skills'])
             if profile.get('preferences'):
@@ -209,19 +217,27 @@ class JobDatabase:
     def log_scrape(self, company_id: int, status: str, jobs_found: int = 0,
                    new_jobs: int = 0, error: str = None, duration: float = None):
         """Log scraper run"""
-        cursor = self.conn.cursor()
-        cursor.execute("""
+        cur = self._cursor()
+        cur.execute("""
             INSERT INTO scraper_logs
             (company_id, status, jobs_found, new_jobs_count, error_message, duration_seconds)
-            VALUES (?, ?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s, %s)
         """, (company_id, status, jobs_found, new_jobs, error, duration))
-        self.conn.commit()
 
     def get_failing_scrapers(self) -> List[Dict]:
         """Get companies whose scrapers are failing"""
-        cursor = self.conn.cursor()
-        cursor.execute("SELECT * FROM failing_scrapers")
-        return [dict(row) for row in cursor.fetchall()]
+        cur = self._cursor()
+        cur.execute("""
+            SELECT c.name, c.career_url, sl.error_message, sl.scraped_at
+            FROM companies c
+            JOIN scraper_logs sl ON c.id = sl.company_id
+            WHERE sl.id IN (
+                SELECT MAX(id) FROM scraper_logs GROUP BY company_id
+            )
+            AND sl.status = 'failed'
+            ORDER BY sl.scraped_at DESC
+        """)
+        return [dict(row) for row in cur.fetchall()]
 
     # ============================================
     # ANALYTICS
@@ -229,24 +245,32 @@ class JobDatabase:
 
     def get_stats(self) -> Dict:
         """Get overall statistics"""
-        cursor = self.conn.cursor()
+        cur = self._cursor()
 
-        # Total counts
-        cursor.execute("SELECT COUNT(*) FROM companies WHERE is_active = 1")
-        total_companies = cursor.fetchone()[0]
+        cur.execute("SELECT COUNT(*) AS cnt FROM companies WHERE is_active = TRUE")
+        total_companies = cur.fetchone()['cnt']
 
-        cursor.execute("SELECT COUNT(*) FROM jobs WHERE status = 'new'")
-        new_jobs = cursor.fetchone()[0]
+        cur.execute("SELECT COUNT(*) AS cnt FROM jobs WHERE status = 'new'")
+        new_jobs = cur.fetchone()['cnt']
 
-        cursor.execute("""
-            SELECT COUNT(*) FROM jobs
+        cur.execute("""
+            SELECT COUNT(*) AS cnt FROM jobs
             WHERE match_score >= (SELECT match_threshold FROM profile WHERE id = 1)
             AND status = 'new'
         """)
-        matching_jobs = cursor.fetchone()[0]
+        matching_jobs = cur.fetchone()['cnt']
 
-        cursor.execute("SELECT * FROM recent_activity")
-        recent = [dict(row) for row in cursor.fetchall()]
+        cur.execute("""
+            SELECT DATE(first_seen_at) AS date,
+                   COUNT(*) AS total_jobs,
+                   COUNT(CASE WHEN match_score >= 0.6 THEN 1 END) AS matching_jobs,
+                   COUNT(CASE WHEN status = 'new' THEN 1 END) AS unseen_jobs
+            FROM jobs
+            WHERE first_seen_at >= CURRENT_DATE - INTERVAL '7 days'
+            GROUP BY DATE(first_seen_at)
+            ORDER BY date DESC
+        """)
+        recent = [dict(row) for row in cur.fetchall()]
 
         return {
             'total_companies': total_companies,
@@ -283,7 +307,6 @@ def get_db() -> JobDatabase:
 
 
 if __name__ == "__main__":
-    # Test database
     with get_db() as db:
-        print("Database initialized successfully!")
+        print("Database connected successfully!")
         print(f"Stats: {db.get_stats()}")
