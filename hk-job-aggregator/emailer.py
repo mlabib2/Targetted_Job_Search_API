@@ -1,10 +1,9 @@
 """
 emailer.py — Weekly HTML digest of HK hedge fund jobs
 
-Two sections:
-  1. AI-Scored Matches  — jobs with match_score >= threshold, unsent, last 7 days
-  2. New Unscored Jobs  — jobs with match_score IS NULL, last 7 days
-     (shown when AI is disabled/failed so you never miss a posting)
+Single unified table of all last-7-day jobs:
+  - Scored jobs first, sorted by match_score DESC
+  - Unscored jobs at the bottom (AI was off or hasn't run)
 
 Usage:
     python emailer.py            # send digest
@@ -28,38 +27,19 @@ from models.db import get_db
 
 load_dotenv()
 
-MATCH_THRESHOLD = 0.6
-
-
 # ── DB queries ────────────────────────────────────────────────────────────────
 
-def get_scored_matches(db) -> list:
+def get_all_new_jobs(db) -> list:
+    """All jobs from last 7 days, unsent. Scored first (desc), unscored last."""
     cur = db._cursor()
     cur.execute("""
         SELECT j.id, j.title, c.name AS company, j.url,
                j.match_score, j.match_reasons, j.location, j.first_seen_at
         FROM jobs j
         JOIN companies c ON j.company_id = c.id
-        WHERE j.match_score >= %s
-          AND j.notified_at IS NULL
+        WHERE j.notified_at IS NULL
           AND j.first_seen_at >= NOW() - INTERVAL '7 days'
-        ORDER BY j.match_score DESC, c.name
-    """, (MATCH_THRESHOLD,))
-    return [dict(row) for row in cur.fetchall()]
-
-
-def get_unscored_new(db) -> list:
-    """Jobs scraped this week that haven't been scored yet (AI was off/failed)."""
-    cur = db._cursor()
-    cur.execute("""
-        SELECT j.id, j.title, c.name AS company, j.url,
-               j.location, j.first_seen_at
-        FROM jobs j
-        JOIN companies c ON j.company_id = c.id
-        WHERE j.match_score IS NULL
-          AND j.notified_at IS NULL
-          AND j.first_seen_at >= NOW() - INTERVAL '7 days'
-        ORDER BY c.name, j.title
+        ORDER BY j.match_score DESC NULLS LAST, c.name
     """)
     return [dict(row) for row in cur.fetchall()]
 
@@ -72,11 +52,13 @@ TD_STYLE = "padding:10px 12px;border-bottom:1px solid #e5e7eb;vertical-align:top
 TD_ALT_STYLE = "padding:10px 12px;border-bottom:1px solid #e5e7eb;vertical-align:top;background:#f9fafb;"
 
 
-def score_badge(score: float) -> str:
+def score_badge(score) -> str:
+    if score is None:
+        return '<span style="display:inline-block;padding:2px 8px;border-radius:12px;background:#f3f4f6;color:#9ca3af;font-size:12px;">—</span>'
     pct = int(score * 100)
-    if pct >= 80:
+    if pct >= 70:
         color, bg = "#166534", "#dcfce7"
-    elif pct >= 60:
+    elif pct >= 45:
         color, bg = "#92400e", "#fef3c7"
     else:
         color, bg = "#374151", "#f3f4f6"
@@ -97,22 +79,23 @@ def parse_reasons(raw) -> list:
     return [r for r in raw if r and not r.startswith("Pre-filtered")]
 
 
-def scored_table(jobs: list) -> str:
+def all_jobs_table(jobs: list) -> str:
     if not jobs:
-        return '<p style="color:#6b7280;font-style:italic;">No scored matches this week.</p>'
+        return '<p style="color:#6b7280;font-style:italic;">No new jobs this week.</p>'
 
     rows = ""
     for i, job in enumerate(jobs):
         td = TD_ALT_STYLE if i % 2 else TD_STYLE
-        reasons = parse_reasons(job.get('match_reasons'))
+        score = job.get('match_score')
+        reasons = parse_reasons(job.get('match_reasons')) if score is not None else []
         reasons_html = (
-            "<ul style='margin:4px 0 0 0;padding-left:16px;color:#374151;'>"
+            "<ul style='margin:4px 0 0 0;padding-left:16px;color:#374151;font-size:12px;'>"
             + "".join(f"<li>{r}</li>" for r in reasons[:3])
             + "</ul>"
         ) if reasons else ""
 
         rows += f"""<tr>
-          <td style="{td}">{score_badge(job['match_score'])}</td>
+          <td style="{td}">{score_badge(score)}</td>
           <td style="{td}"><strong>{job['company']}</strong></td>
           <td style="{td}">
             <a href="{job['url']}" style="color:#1d4ed8;text-decoration:none;font-weight:600;">
@@ -142,53 +125,11 @@ def scored_table(jobs: list) -> str:
     </table>"""
 
 
-def unscored_table(jobs: list) -> str:
-    if not jobs:
-        return '<p style="color:#6b7280;font-style:italic;">No unscored jobs this week.</p>'
-
-    rows = ""
-    for i, job in enumerate(jobs):
-        td = TD_ALT_STYLE if i % 2 else TD_STYLE
-        rows += f"""<tr>
-          <td style="{td}"><strong>{job['company']}</strong></td>
-          <td style="{td}">
-            <a href="{job['url']}" style="color:#1d4ed8;text-decoration:none;font-weight:600;">
-              {job['title']}
-            </a>
-          </td>
-          <td style="{td};color:#6b7280;">{job.get('location') or 'Hong Kong'}</td>
-          <td style="{td}">
-            <a href="{job['url']}" style="display:inline-block;padding:4px 12px;background:#6b7280;
-               color:#fff;border-radius:4px;text-decoration:none;font-size:12px;white-space:nowrap;">
-              View →
-            </a>
-          </td>
-        </tr>"""
-
-    return f"""
-    <table style="{TABLE_STYLE}">
-      <thead><tr>
-        <th style="{TH_STYLE}">Company</th>
-        <th style="{TH_STYLE}">Role</th>
-        <th style="{TH_STYLE}">Location</th>
-        <th style="{TH_STYLE}"></th>
-      </tr></thead>
-      <tbody>{rows}</tbody>
-    </table>"""
-
-
-def section(title: str, subtitle: str, content: str, accent: str = "#1e3a5f") -> str:
-    return f"""
-    <tr><td style="padding:24px 32px 0;">
-      <h2 style="margin:0 0 2px;font-size:16px;color:{accent};">{title}</h2>
-      <p style="margin:0 0 12px;font-size:12px;color:#9ca3af;">{subtitle}</p>
-      {content}
-    </td></tr>"""
-
-
-def build_html(scored: list, unscored: list) -> str:
+def build_html(jobs: list) -> str:
     today = datetime.now().strftime("%d %b %Y")
-    total = len(scored) + len(unscored)
+    scored_count = sum(1 for j in jobs if j.get('match_score') is not None)
+    unscored_count = len(jobs) - scored_count
+    companies = len(set(j['company'] for j in jobs))
 
     return f"""<!DOCTYPE html>
 <html>
@@ -202,35 +143,23 @@ def build_html(scored: list, unscored: list) -> str:
   <tr>
     <td style="background:#1e3a5f;padding:28px 32px;">
       <p style="margin:0;font-size:11px;color:#93c5fd;letter-spacing:1.5px;text-transform:uppercase;">HK Hedge Fund Job Digest</p>
-      <h1 style="margin:6px 0 0;font-size:24px;color:#fff;font-weight:700;">{len(scored)} match{"es" if len(scored) != 1 else ""} · {len(unscored)} unscored</h1>
-      <p style="margin:6px 0 0;font-size:13px;color:#93c5fd;">{today} · Last 7 days · Threshold {int(MATCH_THRESHOLD*100)}%</p>
+      <h1 style="margin:6px 0 0;font-size:24px;color:#fff;font-weight:700;">{len(jobs)} job{"s" if len(jobs) != 1 else ""} this week</h1>
+      <p style="margin:6px 0 0;font-size:13px;color:#93c5fd;">{today} · {scored_count} scored · {unscored_count} unscored · sorted by fit</p>
     </td>
   </tr>
 
-  <!-- Scored matches -->
-  {section(
-      f"AI-Scored Matches ({len(scored)})",
-      "Jobs scored above your match threshold — sorted by fit",
-      scored_table(scored),
-      "#1e3a5f"
-  )}
-
-  <!-- Divider -->
-  <tr><td style="padding:20px 32px 0;"><hr style="border:none;border-top:1px solid #e5e7eb;margin:0;"></td></tr>
-
-  <!-- Unscored -->
-  {section(
-      f"New Unscored Jobs ({len(unscored)})",
-      "AI scorer was off or hasn't run yet — review manually",
-      unscored_table(unscored),
-      "#6b7280"
-  )}
+  <!-- Unified job table -->
+  <tr><td style="padding:24px 32px 0;">
+    <h2 style="margin:0 0 2px;font-size:16px;color:#1e3a5f;">All New Jobs ({len(jobs)})</h2>
+    <p style="margin:0 0 12px;font-size:12px;color:#9ca3af;">Scored jobs first — sorted by AI fit score. Tweak your CV for amber ones.</p>
+    {all_jobs_table(jobs)}
+  </td></tr>
 
   <!-- Footer -->
   <tr>
     <td style="padding:24px 32px;background:#f9fafb;border-top:1px solid #e5e7eb;margin-top:24px;">
       <p style="margin:0;font-size:11px;color:#9ca3af;text-align:center;">
-        HK Job Aggregator · Greenhouse scraper · {total} new jobs this week across {len(set(j['company'] for j in scored + unscored))} companies
+        HK Job Aggregator · Greenhouse scraper · {len(jobs)} new jobs across {companies} companies
       </p>
     </td>
   </tr>
@@ -250,7 +179,8 @@ def send_email(html: str, scored_count: int, unscored_count: int):
     notify = os.getenv("NOTIFY_EMAIL")
     today = datetime.now().strftime("%d %b %Y")
 
-    subject = f"[HK Jobs] {scored_count} match{'es' if scored_count != 1 else ''}, {unscored_count} unscored — {today}"
+    total = scored_count + unscored_count
+    subject = f"[HK Jobs] {total} new job{'s' if total != 1 else ''} — {scored_count} scored — {today}"
 
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
@@ -271,17 +201,19 @@ def run_emailer(dry_run: bool = False):
     print("=" * 60 + "\n")
 
     with get_db() as db:
-        scored = get_scored_matches(db)
-        unscored = get_unscored_new(db)
+        jobs = get_all_new_jobs(db)
+        scored_count = sum(1 for j in jobs if j.get('match_score') is not None)
+        unscored_count = len(jobs) - scored_count
 
-        print(f"Scored matches (>= {int(MATCH_THRESHOLD*100)}%): {len(scored)}")
-        print(f"Unscored new jobs:              {len(unscored)}")
+        print(f"Total new jobs (last 7 days): {len(jobs)}")
+        print(f"  Scored:   {scored_count}")
+        print(f"  Unscored: {unscored_count}")
 
-        if not scored and not unscored:
+        if not jobs:
             print("\nNothing to send.")
             return
 
-        html = build_html(scored, unscored)
+        html = build_html(jobs)
 
         if dry_run:
             out = Path("digest_preview.html")
@@ -291,13 +223,13 @@ def run_emailer(dry_run: bool = False):
             return
 
         print("\nSending...")
-        send_email(html, len(scored), len(unscored))
+        send_email(html, scored_count, unscored_count)
 
-        for job in scored + unscored:
+        for job in jobs:
             db.mark_job_notified(job['id'])
 
         print(f"Sent to {os.getenv('NOTIFY_EMAIL')}")
-        print(f"Marked {len(scored)} scored + {len(unscored)} unscored jobs as notified.")
+        print(f"Marked {len(jobs)} jobs as notified.")
 
 
 if __name__ == "__main__":

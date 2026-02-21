@@ -38,45 +38,70 @@ BATCH_SIZE = 5
 RATE_LIMIT_DELAY = 0.5
 MATCH_THRESHOLD = 0.6
 
-FILTER_SENIORITY = [
-    r"\bsenior\b", r"\bstaff\b", r"\bprincipal\b", r"\bdirector\b",
-    r"\bmanaging director\b", r"\bvice president\b", r"\bvp\b",
-    r"\bhead of\b", r"\bpartner\b(?!ship)",
-    r"\bchief\b", r"\bc-level\b",
-]
 FILTER_FUNCTIONS = [
     r"\bpayroll\b", r"\bprocurement\b", r"\brecruiter\b", r"\brecruiting\b",
-    r"\btalent acquisition\b", r"\bhuman resources\b", r"\bhr\b",
+    r"\btalent acquisition\b", r"\bhuman resources\b",
     r"\boffice manager\b", r"\bexecutive assistant\b", r"\badministrative\b",
     r"\baccountant\b", r"\baudit\b", r"\blegal counsel\b",
-    r"\bmarketing\b", r"\bsales\b", r"\bbusiness development\b",
+    r"\bmarketing\b", r"\bsales\b",
     r"\bgraphic design\b", r"\bcontent writer\b", r"\bcopywriter\b",
     r"\binterior design\b", r"\bfacilities\b",
 ]
 
-BATCH_SYSTEM_PROMPT = """You are a job-fit evaluator for a CS + quant finance candidate.
+BATCH_SYSTEM_PROMPT = """You are evaluating job fit for a specific candidate targeting HK hedge fund and quant trading roles.
+
+CANDIDATE PROFILE:
+- Fresh graduate: BSc Computer Science + Minor Finance & Economics, City University of Hong Kong, First Class Honors (graduating May 2026)
+- Current role: Software Engineer / Trade Desk Ops (contractor) at a HK hedge fund — trading infrastructure, market data pipelines (Bloomberg, Refinitiv), FastAPI services, PostgreSQL, AWS Lambda/EC2, CI/CD, risk/compliance layer
+- Previous: Quant Developer intern (C++ fully automated options trading on IBKR, backtesting, QuantConnect), SWE intern (FastAPI/Django), PwC analytics placement (SQL, Power BI, AWS)
+- Skills: C++, Python, SQL, FastAPI, PostgreSQL, Redis, Docker, AWS, Bloomberg, IBKR, QuantConnect, GitHub Actions
+- CFA Level I candidate (2026); based in Hong Kong
+
+SCORING RUBRIC (0.0–1.0) — experience level is the #1 factor:
+- 0.85–1.00: Campus/graduate/new grad program, "0–1 year" experience, or entry-level at a quant/trading firm with strong stack overlap
+- 0.65–0.85: Junior role (1–2 yrs acceptable), strong overlap with his trading-systems/quant/backend tech stack
+- 0.45–0.65: Partial fit — relevant domain but moderate experience gap, or role needs skills he partially has
+- 0.20–0.45: Too senior (3+ years required), limited stack overlap, or stretch role
+- 0.00–0.20: Explicitly senior (VP, Director, MD, Head of, Principal, 5+ yrs) OR completely wrong function
+
+BOOST score for:
+- Title contains: Graduate, New Grad, Campus, Associate, Junior, Entry-Level, Analyst
+- Requires 0–2 years experience
+- Mentions: C++, Python, trading systems, quant/algo, options/derivatives, market data, hedge fund tech
+- Located in Hong Kong
+
+PENALISE score for:
+- Title or requirements: Senior, VP, Vice President, Director, Managing Director, Head of, Principal (unless clearly entry track)
+- Requires 3+ years experience
+- Non-technical functions: operations management, compliance, legal, sales, finance/accounting (not quant)
 
 You will receive a CV and a numbered list of jobs.
-Respond ONLY with a valid JSON array with exactly one object per job, in order:
+Respond ONLY with a valid JSON array, one object per job, in order:
 [
-  {"job": 1, "score": 0.85, "reasons": ["reason 1", "reason 2"]},
-  {"job": 2, "score": 0.42, "reasons": ["reason 1", "reason 2"]}
+  {"job": 1, "score": 0.88, "reasons": ["Graduate program at quant firm", "C++ and Python match", "HK based"]},
+  {"job": 2, "score": 0.22, "reasons": ["Requires 5+ years experience", "Director-level role"]}
 ]
 
-Score 0.0–1.0:
-- 0.0–0.4: Poor fit
-- 0.4–0.6: Partial fit
-- 0.6–0.8: Good fit
-- 0.8–1.0: Excellent fit
+2–3 short, specific reasons per job. Mention what matches AND what's missing."""
 
-2–3 short reasons per job. Cover what matches and what's missing."""
+SINGLE_SYSTEM_PROMPT = """You are evaluating job fit for a specific candidate.
 
-SINGLE_SYSTEM_PROMPT = """You are a job-fit evaluator for a CS + quant finance candidate.
+CANDIDATE: Fresh graduate (May 2026), BSc Computer Science + Minor Finance & Economics, City University of Hong Kong, First Class Honors.
+Current: HK hedge fund SWE contractor (trading infrastructure, Bloomberg, Refinitiv, FastAPI, PostgreSQL, AWS, risk/compliance systems).
+Past: Quant dev intern (C++ automated options trading, IBKR, QuantConnect), SWE intern (FastAPI/Django), PwC analytics (SQL, Power BI, AWS).
+Skills: C++, Python, SQL, FastAPI, PostgreSQL, Redis, Docker, AWS, Bloomberg, QuantConnect. CFA L1 candidate. Based in HK.
+
+SCORING — experience level is the #1 factor:
+- 0.85–1.00: Campus/graduate/new grad/entry-level, 0–1 yr experience, strong stack match
+- 0.65–0.85: Junior role (1–2 yrs), strong overlap with trading systems or quant/backend tech
+- 0.45–0.65: Partial fit — relevant domain but experience gap or secondary skills needed
+- 0.20–0.45: Too senior (3+ yrs required) or limited overlap
+- 0.00–0.20: VP/MD/Director/Head of, 5+ yrs required, or wrong function entirely
 
 Respond ONLY with valid JSON:
-{"score": 0.75, "reasons": ["reason 1", "reason 2"]}
+{"score": 0.82, "reasons": ["reason 1", "reason 2"]}
 
-Score 0.0–1.0. 2–3 short reasons."""
+2–3 short specific reasons covering fit and gaps."""
 
 
 def load_cv() -> str:
@@ -88,9 +113,6 @@ def load_cv() -> str:
 def pre_filter(title: str) -> str | None:
     """Returns filter reason if job should be skipped, else None."""
     t = title.lower()
-    for pattern in FILTER_SENIORITY:
-        if re.search(pattern, t):
-            return "Pre-filtered: seniority level"
     for pattern in FILTER_FUNCTIONS:
         if re.search(pattern, t):
             return "Pre-filtered: function mismatch"
@@ -292,7 +314,7 @@ def run_matcher(dry_run: bool = False):
         print(f"Done {'(dry run — nothing saved)' if dry_run else ''}")
         print(f"  Pre-filtered (no API):  {pre_filtered}")
         print(f"  Scored via API:         {scored}  ({api_calls} API calls)")
-        print(f"  Matches (>= {MATCH_THRESHOLD}):       {matches}")
+        print(f"  Scored above 0.6:       {matches}")
         print(f"  Will retry next run:    {skipped}")
         print(f"  Errors:                 {errors}")
 
