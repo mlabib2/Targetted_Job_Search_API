@@ -24,25 +24,65 @@ jobs:
           cache-dependency-path: hk-job-aggregator/requirements.txt
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          echo "::group::pip install"
+          pip install -r requirements.txt
+          echo "::endgroup::"
 
       - name: Scrape jobs
+        id: scrape
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: python scrape_all.py --no-descriptions
+        run: |
+          echo "::group::Scraping Greenhouse companies"
+          echo "Started at $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          python scrape_all.py --no-descriptions
+          echo "::endgroup::"
 
       - name: Score new jobs
-        # continue even if scorer fails — emailer will show unscored table
+        id: score
         continue-on-error: true
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: python matcher.py
+        run: |
+          echo "::group::AI scoring (Claude Haiku)"
+          echo "Started at $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          python matcher.py
+          echo "::endgroup::"
+
+      - name: Warn if scorer failed
+        if: steps.score.outcome == 'failure'
+        run: echo "::warning::Matcher failed or API key missing — email will show unscored table only"
 
       - name: Send digest email
+        id: email
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           NOTIFY_EMAIL: ${{ secrets.NOTIFY_EMAIL }}
-        run: python emailer.py
+        run: |
+          echo "::group::Sending email digest"
+          echo "Started at $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          python emailer.py
+          echo "::endgroup::"
+
+      - name: Write job summary
+        if: always()
+        env:
+          SCRAPE_STATUS: ${{ steps.scrape.outcome }}
+          SCORE_STATUS:  ${{ steps.score.outcome }}
+          EMAIL_STATUS:  ${{ steps.email.outcome }}
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          ## HK Job Digest — $(date -u '+%d %b %Y %H:%M UTC')
+
+          | Step | Status |
+          |------|--------|
+          | Scrape jobs | $SCRAPE_STATUS |
+          | AI scoring  | $SCORE_STATUS |
+          | Email digest | $EMAIL_STATUS |
+
+          > Ran at $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+          EOF
