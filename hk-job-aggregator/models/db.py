@@ -5,6 +5,7 @@ Uses PostgreSQL (Supabase) with psycopg2
 
 import psycopg2
 import psycopg2.extras
+import psycopg2.errors
 import json
 import hashlib
 import os
@@ -94,22 +95,39 @@ class JobDatabase:
             """, (job_hash,))
             return None
 
-        cur = self._cursor()
-        cur.execute("""
-            INSERT INTO jobs (
+        try:
+            cur = self._cursor()
+            cur.execute("""
+                INSERT INTO jobs (
+                    company_id, job_hash, title, url, description,
+                    location, job_type, requirements, posted_date
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                RETURNING id
+            """, (
                 company_id, job_hash, title, url, description,
-                location, job_type, requirements, posted_date
+                kwargs.get('location'),
+                kwargs.get('job_type'),
+                kwargs.get('requirements'),
+                kwargs.get('posted_date')
+            ))
+            return cur.fetchone()['id']
+        except psycopg2.errors.UniqueViolation:
+            # URL already exists under a different hash — treat as duplicate
+            cur = self._cursor()
+            cur.execute(
+                "UPDATE jobs SET last_seen_at = CURRENT_TIMESTAMP WHERE url = %s",
+                (url,)
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            RETURNING id
-        """, (
-            company_id, job_hash, title, url, description,
-            kwargs.get('location'),
-            kwargs.get('job_type'),
-            kwargs.get('requirements'),
-            kwargs.get('posted_date')
-        ))
-        return cur.fetchone()['id']
+            return None
+
+    def update_job_description(self, job_id: int, description: str):
+        """Set description on a newly added job"""
+        cur = self._cursor()
+        cur.execute(
+            "UPDATE jobs SET description = %s WHERE id = %s",
+            (description, job_id)
+        )
 
     def job_exists(self, job_hash: str) -> bool:
         """Check if job already exists"""
