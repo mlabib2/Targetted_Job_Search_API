@@ -1,0 +1,53 @@
+MAHIR LABIB
++852 56114642 | mlabib2-c@my.cityu.edu.hk | linkedin.com/in/mahir-labib/ | Hong Kong
+
+EXPERIENCE
+
+Pamalican Asset Management (Hedge Fund) — Hong Kong SAR
+Software Engineer / Trade Desk Operations Engineer - Contractor | Sep 2025 – Present
+- Led end-to-end migration of live trading and analytics infrastructure from AWS EC2 to AWS Lambda, supporting an intraday multi-strategy desk trading 500+ instruments across equities, FX, and macro.
+- Productionized market data ingestion and analytics pipelines (Bloomberg, Refinitiv), maintaining historical price stores, macro signal flags, and signal/reversal calculations used in daily trading decisions and risk monitoring.
+- Built and owned FastAPI services for trade tagging, signal generation, portfolio metadata, and PostgreSQL integration, ensuring correctness of quant calculations and downstream trading workflows.
+- Designed and implemented a compliance and risk-control layer with pre-trade rule checks (blacklists, recent exposure, internal constraints), including automated alerting, audit logs, and governance controls.
+- Owned production reliability and incident response, developing automated parsers for daily broker statements (tier-1 investment banks), and implementing monitoring, logging, and CI/CD (CloudWatch, GitHub Actions).
+
+Alliance Asset Management (Hedge Fund) — Hong Kong SAR
+Quantitative Developer (Options Trading) - Internship | Mar 2025 – Aug 2025
+- Built and deployed a C++ fully automated XSP options trading strategy on IBKR, defining entry/exit logic, stop-loss rules, volatility filters, and position sizing for intraday and weekly execution.
+- Owned the transition from paper trading to live execution, executing 10+ live trades and monitoring PnL, drawdowns, and execution quality across the full trade lifecycle.
+- Developed Python-based backtesting and monitoring systems (QuantConnect, custom scripts) to stress-test performance across volatility regimes, market conditions, and live execution scenarios.
+- Automated fundamental screening pipelines (ROCE, EPS CAGR) in Excel VBA to support idea generation and valuation cross-checks alongside quantitative strategy research.
+
+Bowtie Life Insurance — Hong Kong SAR
+Software Engineer - Internship | Jan 2025 – Mar 2025
+- Developed backend services with FastAPI and Django, supporting API workflows, data ingestion, and database operations.
+- Worked with PostgreSQL pipelines to process and validate large-scale structured datasets in production systems.
+
+PwC (PricewaterhouseCoopers) — Hong Kong SAR
+Digital Redesign – Placement (CRM Team) | Aug 2023 – May 2024
+- Owned analytics automation using Power BI, SQL, and R, supporting recurring management reporting & process redesign.
+- Automated data workflows on AWS, reducing manual reporting time by 40% and enhancing operational efficiency.
+- Designed 2 interactive dashboards for CRM sector clients, enabling real-time tracking of KPIs and business performance.
+
+EDUCATION
+
+City University of Hong Kong — Hong Kong SAR
+BSc in Computer Science; Minor in Finance & Economics; GPA: First Class Honors | Expected: May 2026
+Courses: Algorithms, Probability, Econometrics, Databases, Cloud Computing, Machine Learning, Operating Systems, Networks
+
+PROJECTS
+
+Low-Latency Order Book Engine (C++, Python, Redis, Docker, pybind11)
+- Engineered a price-time priority matching engine in C++ achieving 0.14μs order insertion and 7M orders/sec throughput.
+- Integrated Redis pub/sub for real-time trade distribution and built Python bindings (pybind11), streaming live Binance WebSocket order book data into the C++ engine every 100ms.
+- Developed a backtesting framework replaying historical BTCUSDT data through the engine via pybind11.
+- Containerized the full pipeline with Docker Compose; automated builds and tests with GitHub Actions CI.
+
+SKILLS
+Languages: C++, Python, SQL, R, VBA
+Technologies: FastAPI, Django, PostgreSQL, Redis, Docker, AWS (EC2, Lambda, CloudWatch), GitHub Actions, Bloomberg, Refinitiv, IBKR, QuantConnect, scikit-learn, gRPC, Google Cloud
+
+ACHIEVEMENTS
+- CFA Level I Candidate (2026)
+- Finalist in 12+ hackathons / trading / case competitions
+- President: International Society; Residence Tutor; Mathematics Olympiad team
