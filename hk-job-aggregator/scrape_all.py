@@ -7,6 +7,7 @@ Usage:
 """
 
 import sys
+import os
 import time
 import argparse
 from pathlib import Path
@@ -16,6 +17,37 @@ sys.path.append(str(Path(__file__).parent))
 
 from scrapers.greenhouse_scraper import GreenhouseScraper
 from models.db import get_db
+
+# GitHub Actions log helpers
+CI = os.getenv("GITHUB_ACTIONS") == "true"
+
+def ts():
+    return datetime.utcnow().strftime("%H:%M:%S")
+
+def log(msg):
+    print(f"[{ts()}] {msg}", flush=True)
+
+def group(name):
+    if CI:
+        print(f"::group::{name}", flush=True)
+    else:
+        print(f"\n── {name}", flush=True)
+
+def endgroup():
+    if CI:
+        print("::endgroup::", flush=True)
+
+def warn(msg):
+    if CI:
+        print(f"::warning::{msg}", flush=True)
+    else:
+        print(f"  ⚠ {msg}", flush=True)
+
+def error(msg):
+    if CI:
+        print(f"::error::{msg}", flush=True)
+    else:
+        print(f"  ✗ {msg}", flush=True)
 
 
 # Greenhouse board tokens for known companies.
@@ -66,6 +98,7 @@ def scrape_company(db, company: dict, fetch_descriptions: bool) -> dict:
 
     start = time.time()
     scraper = GreenhouseScraper(name, token)
+    log(f"Fetching {name} ({token})...")
 
     try:
         jobs = scraper.scrape_jobs(location_filter=LOCATION_FILTER)
@@ -73,6 +106,8 @@ def scrape_company(db, company: dict, fetch_descriptions: bool) -> dict:
         duration = time.time() - start
         db.log_scrape(company_id, 'failed', error=str(e), duration=duration)
         return {'company': name, 'status': 'failed', 'error': str(e)}
+
+    log(f"  {len(jobs)} HK jobs found")
 
     if not jobs:
         duration = time.time() - start
@@ -95,10 +130,12 @@ def scrape_company(db, company: dict, fetch_descriptions: bool) -> dict:
 
         if job_id is None:
             dupe_count += 1
+            log(f"  dup  {job['title'][:55]}")
             continue
 
         # New job — fetch full description if requested
         new_count += 1
+        log(f"  NEW  {job['title'][:55]}")
         if fetch_descriptions and job.get('greenhouse_id'):
             try:
                 details = scraper.get_job_details(job['greenhouse_id'])
@@ -130,16 +167,15 @@ def scrape_company(db, company: dict, fetch_descriptions: bool) -> dict:
 
 
 def scrape_all(fetch_descriptions: bool = True):
-    print("=" * 60)
-    print("HK Job Aggregator — Greenhouse Scraper")
-    print(f"Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print("=" * 60 + "\n")
+    log("=" * 55)
+    log("HK Job Aggregator — Greenhouse Scraper")
+    log(f"Mode: {'full (with descriptions)' if fetch_descriptions else 'metadata only'}")
+    log("=" * 55)
 
     results = []
 
     with get_db() as db:
         all_companies = db.get_active_companies()
-        # Use GREENHOUSE_TOKENS as source of truth — ats_platform in DB is informational only
         company_by_name = {c['name']: c for c in all_companies}
         greenhouse_companies = [
             company_by_name[name]
@@ -148,63 +184,54 @@ def scrape_all(fetch_descriptions: bool = True):
         ]
         missing = [name for name in GREENHOUSE_TOKENS if name not in company_by_name]
         if missing:
-            print(f"Warning: not in DB (run seed): {missing}\n")
+            warn(f"Not in DB (run seed): {missing}")
 
-        print(f"Found {len(greenhouse_companies)} Greenhouse companies\n")
+        log(f"{len(greenhouse_companies)} companies to scrape\n")
 
         for company in greenhouse_companies:
-            print(f"→ {company['name']}")
+            group(company['name'])
             result = scrape_company(db, company, fetch_descriptions)
             results.append(result)
 
             if result['status'] == 'skipped':
-                print(f"  ⊘ Skipped: {result['reason']}")
+                warn(f"Skipped: {result['reason']}")
             elif result['status'] == 'failed':
-                print(f"  ✗ Failed: {result.get('error', 'unknown error')}")
+                error(f"Failed: {result.get('error', 'unknown')}")
             else:
-                desc_note = ' (+ descriptions)' if fetch_descriptions and result['new'] else ''
-                print(
-                    f"  ✓ {result['new']} new, "
+                log(
+                    f"Done — {result['new']} new, "
                     f"{result['duplicates']} dupes, "
-                    f"{result['found']} HK jobs found"
-                    f"{desc_note} ({result.get('duration', 0)}s)"
+                    f"{result['found']} HK jobs ({result.get('duration', 0)}s)"
                 )
-
+            endgroup()
             time.sleep(COMPANY_DELAY)
 
-        # ── Summary ─────────────────────────────────────────────
-        print("\n" + "=" * 60)
-        print("Summary")
-        print("=" * 60)
-
-        total_new = sum(r.get('new', 0) for r in results if r['status'] == 'success')
+        # ── Summary ──────────────────────────────────────────────
+        total_new   = sum(r.get('new', 0) for r in results if r['status'] == 'success')
         total_found = sum(r.get('found', 0) for r in results if r['status'] == 'success')
-        failed = [r for r in results if r['status'] == 'failed']
+        failed  = [r for r in results if r['status'] == 'failed']
         skipped = [r for r in results if r['status'] == 'skipped']
 
+        group("Scrape Summary")
+        col = 35
+        log(f"{'Company':<{col}} {'HK Found':>9} {'New':>6} {'Dupes':>6}  Status")
+        log("-" * (col + 30))
         for r in results:
             if r['status'] == 'success':
-                sym = '✓'
-                detail = f"{r['new']} new / {r['found']} HK jobs"
+                log(f"{r['company']:<{col}} {r['found']:>9} {r['new']:>6} {r['duplicates']:>6}  ✓")
             elif r['status'] == 'skipped':
-                sym = '⊘'
-                detail = r['reason']
+                log(f"{r['company']:<{col}} {'—':>9} {'—':>6} {'—':>6}  ⊘ skipped")
             else:
-                sym = '✗'
-                detail = 'FAILED'
-            print(f"  {sym} {r['company']}: {detail}")
+                log(f"{r['company']:<{col}} {'—':>9} {'—':>6} {'—':>6}  ✗ FAILED")
+        log("-" * (col + 30))
+        log(f"{'TOTAL':<{col}} {total_found:>9} {total_new:>6}")
 
-        print(f"\nTotal: {total_new} new jobs across {total_found} HK postings found")
         if failed:
-            print(f"Failures ({len(failed)}): {[r['company'] for r in failed]}")
-        if skipped:
-            print(f"Skipped ({len(skipped)}): {[r['company'] for r in skipped]}")
+            warn(f"Failures: {[r['company'] for r in failed]}")
 
         stats = db.get_stats()
-        print(
-            f"\nDatabase: {stats['new_jobs']} unscored new jobs, "
-            f"{stats['total_companies']} active companies"
-        )
+        log(f"\nDB: {stats['new_jobs']} unscored jobs | {stats['total_companies']} active companies")
+        endgroup()
 
 
 if __name__ == "__main__":
