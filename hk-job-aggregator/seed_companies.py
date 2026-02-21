@@ -97,6 +97,91 @@ TARGET_COMPANIES = [
         'ats_platform': 'iCIMS',
         'notes': 'HFT, market making'
     },
+    # Greenhouse hedge funds with confirmed HK jobs
+    {
+        'name': 'Point72',
+        'career_url': 'https://point72.com/careers/',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Multi-strategy hedge fund, strong HK presence'
+    },
+    {
+        'name': 'Schonfeld',
+        'career_url': 'https://www.schonfeld.com/careers/',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Multi-strategy hedge fund'
+    },
+    {
+        'name': 'Man Group',
+        'career_url': 'https://www.man.com/careers',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Quant hedge fund'
+    },
+    {
+        'name': 'WorldQuant',
+        'career_url': 'https://www.worldquant.com/career-listing/',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Quant research firm'
+    },
+    {
+        'name': 'Qube Research & Technologies',
+        'career_url': 'https://www.qube-rt.com/careers/',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Quant trading, strong HK presence'
+    },
+    {
+        'name': 'Squarepoint Capital',
+        'career_url': 'https://www.squarepointcap.com/careers',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Quant hedge fund'
+    },
+    {
+        'name': 'Tower Research Capital',
+        'career_url': 'https://www.tower-research.com/open-positions',
+        'ats_platform': 'Greenhouse',
+        'notes': 'HFT prop trading'
+    },
+    {
+        'name': 'Graham Capital Management',
+        'career_url': 'https://www.grahamcapital.com/careers.aspx',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Macro/quant hedge fund'
+    },
+    {
+        'name': 'AQR',
+        'career_url': 'https://www.aqr.com/About-Us/Careers',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Quant hedge fund'
+    },
+    {
+        'name': 'Marshall Wace',
+        'career_url': 'https://www.marshallwace.com/careers/',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Long/short equity hedge fund'
+    },
+    {
+        'name': 'Winton',
+        'career_url': 'https://www.winton.com/careers',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Quant/systematic hedge fund'
+    },
+    {
+        'name': 'Akuna Capital',
+        'career_url': 'https://akunacapital.com/careers',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Options market maker'
+    },
+    {
+        'name': 'ExodusPoint',
+        'career_url': 'https://www.exoduspoint.com/careers/',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Multi-strategy hedge fund'
+    },
+    {
+        'name': 'PDT Partners',
+        'career_url': 'https://www.pdtpartners.com/careers.html',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Quant hedge fund, spun out of Morgan Stanley'
+    },
 ]
 
 
