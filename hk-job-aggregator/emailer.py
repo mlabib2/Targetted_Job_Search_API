@@ -176,7 +176,8 @@ def build_html(jobs: list) -> str:
 def send_email(html: str, scored_count: int, unscored_count: int):
     gmail = os.getenv("GMAIL_ADDRESS")
     password = os.getenv("GMAIL_APP_PASSWORD")
-    notify = os.getenv("NOTIFY_EMAIL")
+    notify_raw = os.getenv("NOTIFY_EMAIL", "")
+    recipients = [addr.strip() for addr in notify_raw.split(",") if addr.strip()]
     today = datetime.now().strftime("%d %b %Y")
 
     total = scored_count + unscored_count
@@ -185,12 +186,12 @@ def send_email(html: str, scored_count: int, unscored_count: int):
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
     msg["From"] = gmail
-    msg["To"] = notify
+    msg["To"] = ", ".join(recipients)
     msg.attach(MIMEText(html, "html"))
 
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
         server.login(gmail, password)
-        server.sendmail(gmail, notify, msg.as_string())
+        server.sendmail(gmail, recipients, msg.as_string())
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
@@ -228,7 +229,9 @@ def run_emailer(dry_run: bool = False):
         for job in jobs:
             db.mark_job_notified(job['id'])
 
-        print(f"Sent to {os.getenv('NOTIFY_EMAIL')}")
+        notify_raw = os.getenv("NOTIFY_EMAIL", "")
+        recipients_log = [a.strip() for a in notify_raw.split(",") if a.strip()]
+        print(f"Sent to {', '.join(recipients_log)}")
         print(f"Marked {len(jobs)} jobs as notified.")
 
 
