@@ -5,10 +5,10 @@ Automated job monitoring for Hong Kong finance roles. Scrapes job postings from 
 ## How It Works
 
 ```
-GitHub Actions (daily, 8am HKT)
+GitHub Actions (daily, 5am HKT)
   → Scrape Greenhouse ATS companies
     → Store & deduplicate in Supabase (PostgreSQL)
-      → AI match new jobs against CV (GPT-4o-mini / Claude Haiku)
+      → AI match new jobs against CV (Claude Haiku)
         → Email daily digest via Gmail SMTP
 ```
 
@@ -29,16 +29,14 @@ GitHub Actions (daily, 8am HKT)
 ```
 hk-job-aggregator/
 ├── models/
-│   ├── db.py                 # Database interface
-│   └── schema.sql            # Database schema
+│   └── db.py                 # Supabase (PostgreSQL) interface
 ├── scrapers/
-│   ├── base_scraper.py       # Abstract base scraper
 │   ├── greenhouse_scraper.py # Greenhouse ATS scraper
 │   └── citadel_scraper.py    # Citadel custom scraper (WIP)
-├── data/                     # Local SQLite data (gitignored)
-├── scrape_and_save.py        # Main scraping entry point
-├── seed_companies.py         # Seed 15 target companies
-├── test_db.py                # Database test suite
+├── scrape_all.py             # Main scraping entry point
+├── matcher.py                # AI job scoring (Claude Haiku)
+├── emailer.py                # HTML digest builder & Gmail sender
+├── seed_companies.py         # Seed target companies
 ├── requirements.txt          # Python dependencies
 └── .env.example              # Environment variables template
 ```
@@ -51,25 +49,37 @@ pip install -r requirements.txt
 cp .env.example .env          # Edit with your credentials
 
 python seed_companies.py      # Seed target companies
-python scrape_and_save.py     # Scrape jobs from Jump Trading
-python test_db.py             # Run database tests
+python scrape_all.py          # Scrape jobs
+python matcher.py             # Score jobs against your CV
+python emailer.py --dry-run   # Preview digest (saves digest_preview.html)
+python emailer.py             # Send digest email
 ```
 
 ## Current Status
 
-- **Phase 1**: Database migration (SQLite → Supabase) — not started
-- **Phase 2**: Expand Greenhouse scrapers — in progress
-- **Phase 3**: AI job matching — not started
-- **Phase 4**: Email notifications — not started
-- **Phase 5**: GitHub Actions scheduler — not started
+- **Scraping**: Greenhouse ATS working (Jump Trading live, more companies planned)
+- **Database**: Supabase (PostgreSQL) — dedup, views, notified tracking
+- **AI Matching**: Claude Haiku scoring jobs against CV
+- **Email**: HTML digest via Gmail SMTP, supports multiple recipients
+- **Scheduler**: GitHub Actions cron — runs daily at 5am HKT
 
-See **[PLAN.md](./PLAN.md)** for the full implementation roadmap.
+## GitHub Actions Setup
+
+Add these secrets to your repo (`Settings → Secrets → Actions`):
+
+| Secret | Description |
+|--------|-------------|
+| `DATABASE_URL` | Supabase connection string |
+| `ANTHROPIC_API_KEY` | Claude API key for AI scoring |
+| `GMAIL_ADDRESS` | Gmail address to send from |
+| `GMAIL_APP_PASSWORD` | Gmail app password |
+| `NOTIFY_EMAIL` | Recipient(s) — comma-separated for multiple |
 
 ## Tech Stack
 
-- **Scraping**: Python, Requests, BeautifulSoup, Greenhouse API
-- **Database**: Supabase (PostgreSQL) — migrating from SQLite
-- **AI Matching**: GPT-4o-mini or Claude Haiku
+- **Scraping**: Python, Requests, Greenhouse API
+- **Database**: Supabase (PostgreSQL)
+- **AI Matching**: Claude Haiku (Anthropic)
 - **Email**: Gmail SMTP
 - **Scheduler**: GitHub Actions (cron)
 
