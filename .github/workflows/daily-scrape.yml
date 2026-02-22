@@ -2,7 +2,7 @@ name: Daily HK Job Scrape
 
 on:
   schedule:
-    - cron: '0 0 * * *'   # midnight UTC = 8am HKT
+    - cron: '0 21 * * *'  # 9pm UTC = 5am HKT
   workflow_dispatch:        # allow manual trigger from GitHub UI
 
 jobs:
