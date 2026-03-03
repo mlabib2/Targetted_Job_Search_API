@@ -8,21 +8,21 @@ from models.db import get_db
 TARGET_COMPANIES = [
     {
         'name': 'Goldman Sachs Hong Kong',
-        'career_url': 'https://www.goldmansachs.com/careers/students/programs/asia-pacific/hong-kong.html',
-        'ats_platform': 'Workday',
-        'notes': 'Check both campus and experienced roles'
+        'career_url': 'https://higher.gs.com/results',
+        'ats_platform': 'Custom GraphQL',
+        'notes': 'Custom Next.js/GraphQL careers site — API at api-higher.gs.com/gateway/api/v1/graphql, no auth required, 112 HK jobs confirmed May 2026'
     },
     {
         'name': 'Morgan Stanley Hong Kong',
-        'career_url': 'https://morganstanley.tal.net/vx/candidate/cms/careerhome?site=Hong+Kong',
-        'ats_platform': 'Taleo',
-        'notes': 'Technology division highly active'
+        'career_url': 'https://ms.wd5.myworkdayjobs.com/External',
+        'ats_platform': 'Workday',
+        'notes': 'Technology division highly active — tenant: ms, wd5, site: External'
     },
     {
         'name': 'HSBC Hong Kong',
-        'career_url': 'https://www.hsbc.com/careers/students-and-graduates/student-programmes/hong-kong',
-        'ats_platform': 'Workday',
-        'notes': 'Large tech teams, many entry roles'
+        'career_url': 'https://mycareer.hsbc.com/',
+        'ats_platform': 'Custom',
+        'notes': 'Custom ATS at mycareer.hsbc.com — no standard API, not scrapeable'
     },
     {
         'name': 'Citadel Securities',
@@ -50,9 +50,9 @@ TARGET_COMPANIES = [
     },
     {
         'name': 'JPMorgan Chase Hong Kong',
-        'career_url': 'https://careers.jpmorgan.com/global/en/students/programs/hong-kong',
-        'ats_platform': 'Workday',
-        'notes': 'Large tech org, many divisions'
+        'career_url': 'https://jpmc.fa.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/jobs',
+        'ats_platform': 'Oracle HCM',
+        'notes': 'Oracle HCM public REST API at hcmRestApi/resources/latest/recruitingCEJobRequisitions — 131 HK jobs confirmed May 2026, site=CX_1001'
     },
     {
         'name': 'Bank of America Hong Kong',
@@ -62,16 +62,16 @@ TARGET_COMPANIES = [
     },
     {
         'name': 'Barclays Hong Kong',
-        'career_url': 'https://search.jobs.barclays/career-areas/technology',
-        'ats_platform': 'Custom',
-        'notes': 'Investment banking tech'
+        'career_url': 'https://barclays.wd3.myworkdayjobs.com/External_Career_Site_Barclays',
+        'ats_platform': 'Workday',
+        'notes': 'Investment banking tech — tenant: barclays, wd3, site: External_Career_Site_Barclays'
     },
     # HK-based prop shops and tech-forward firms
     {
         'name': 'Optiver',
-        'career_url': 'https://optiver.com/working-at-optiver/career-opportunities/',
-        'ats_platform': 'SmartRecruiters',
-        'notes': 'Market making, APAC HQ in Sydney but HK roles'
+        'career_url': 'https://boards.greenhouse.io/optiverus',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Market making, APAC HQ in Sydney but HK roles — token: optiverus'
     },
     {
         'name': 'Flow Traders',
@@ -81,9 +81,9 @@ TARGET_COMPANIES = [
     },
     {
         'name': 'Susquehanna International Group (SIG)',
-        'career_url': 'https://sig.com/campus-programs/',
-        'ats_platform': 'Custom',
-        'notes': 'Quant trading, options market making'
+        'career_url': 'https://careers-sig.icims.com/jobs/search',
+        'ats_platform': 'iCIMS',
+        'notes': 'Uses iCIMS (careers-sig.icims.com) — no public API, not scrapeable'
     },
     {
         'name': 'IMC Trading',
@@ -93,9 +93,9 @@ TARGET_COMPANIES = [
     },
     {
         'name': 'Virtu Financial',
-        'career_url': 'https://www.virtu.com/careers/',
-        'ats_platform': 'iCIMS',
-        'notes': 'HFT, market making'
+        'career_url': 'https://job-boards.greenhouse.io/virtu',
+        'ats_platform': 'Greenhouse',
+        'notes': 'HFT, market making — token: virtu'
     },
     # Greenhouse hedge funds with confirmed HK jobs
     {
@@ -140,6 +140,43 @@ TARGET_COMPANIES = [
         'ats_platform': 'Greenhouse',
         'notes': 'HFT prop trading'
     },
+    # Workday companies (confirmed tenant IDs, May 2026)
+    {
+        'name': 'Deutsche Bank',
+        'career_url': 'https://db.wd3.myworkdayjobs.com/DBWebsite',
+        'ats_platform': 'Workday',
+        'notes': 'Investment bank, HK tech and markets roles — tenant: db, wd3, site: DBWebsite'
+    },
+    {
+        'name': 'Macquarie',
+        'career_url': 'https://mq.wd3.myworkdayjobs.com/CareersatMQ',
+        'ats_platform': 'Workday',
+        'notes': 'Investment bank/asset manager, HK office — tenant: mq, wd3, site: CareersatMQ'
+    },
+    {
+        'name': 'BlackRock',
+        'career_url': 'https://blackrock.wd1.myworkdayjobs.com/BlackRock_Professional',
+        'ats_platform': 'Workday',
+        'notes': "World's largest asset manager, Aladdin tech platform, HK office — tenant: blackrock, wd1, site: BlackRock_Professional"
+    },
+    {
+        'name': 'HKEX',
+        'career_url': 'https://hkex.wd3.myworkdayjobs.com/HKEXCareerPage',
+        'ats_platform': 'Workday',
+        'notes': 'Hong Kong Stock Exchange — tech and data roles, very HK-specific — tenant: hkex, wd3, site: HKEXCareerPage'
+    },
+    {
+        'name': 'Fidelity International',
+        'career_url': 'https://fil.wd3.myworkdayjobs.com/001',
+        'ats_platform': 'Workday',
+        'notes': 'Global asset manager (FIL), HK office — tenant: fil, wd3, site: 001'
+    },
+    {
+        'name': 'State Street',
+        'career_url': 'https://statestreet.wd1.myworkdayjobs.com/Global',
+        'ats_platform': 'Workday',
+        'notes': 'Global custodian/asset manager, APAC hub in HK — 10 HK jobs confirmed May 2026 — tenant: statestreet, wd1, site: Global'
+    },
     # Other firms with confirmed HK presence (custom/unsupported ATS or pending)
     {
         'name': 'Two Sigma',
@@ -162,8 +199,8 @@ TARGET_COMPANIES = [
     {
         'name': 'Citadel',
         'career_url': 'https://www.citadel.com/careers/',
-        'ats_platform': 'Greenhouse',
-        'notes': 'Quant / multi-strat hedge fund — board token unconfirmed, blocks 403'
+        'ats_platform': 'Unknown',
+        'notes': 'Greenhouse 404, Lever 404, careers page returns 403 to scrapers — manually check in browser'
     },
 ]
 
