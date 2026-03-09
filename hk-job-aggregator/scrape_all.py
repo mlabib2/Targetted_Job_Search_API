@@ -17,6 +17,9 @@ sys.path.append(str(Path(__file__).parent))
 
 from scrapers.greenhouse_scraper import GreenhouseScraper
 from scrapers.lever_scraper import LeverScraper
+from scrapers.workday_scraper import WorkdayScraper
+from scrapers.goldman_scraper import GoldmanScraper
+from scrapers.jpmorgan_scraper import JPMorganScraper
 from models.db import get_db
 
 # GitHub Actions log helpers
@@ -68,6 +71,8 @@ GREENHOUSE_TOKENS = {
     'WorldQuant':                       'worldquant',                    # 1 HK job
     'DRW':                              'drweng',                        # 1 HK job
     'Hudson River Trading':             'wehrtyou',                      # 1 HK job
+    'Optiver':                          'optiverus',                     # 3 HK jobs confirmed May 2026
+    'Virtu Financial':                  'virtu',                         # 2 HK jobs confirmed May 2026
 }
 
 LEVER_TOKENS = {
@@ -75,7 +80,28 @@ LEVER_TOKENS = {
     # Removed: Two Sigma (custom site careers.twosigma.com, not Lever)
     # Removed: Millennium Management (uses Eightfold at career.mlp.com, not Lever)
     # Removed: Hudson River Trading (moved to Greenhouse above, token: wehrtyou)
+    # Removed: Optiver (uses Greenhouse, token: optiverus)
+    # Removed: Virtu Financial (uses Greenhouse, token: virtu)
 }
+
+# Workday companies: name must match the DB 'name' column exactly (from seed_companies.py)
+# Config: tenant, wd (data center), site (board name)
+WORKDAY_TOKENS = {
+    'Morgan Stanley Hong Kong': {'tenant': 'ms',         'wd': 'wd5', 'site': 'External'},
+    'Barclays Hong Kong':       {'tenant': 'barclays',   'wd': 'wd3', 'site': 'External_Career_Site_Barclays'},
+    'Deutsche Bank':            {'tenant': 'db',         'wd': 'wd3', 'site': 'DBWebsite'},
+    'Macquarie':                {'tenant': 'mq',         'wd': 'wd3', 'site': 'CareersatMQ'},
+    'BlackRock':                {'tenant': 'blackrock',  'wd': 'wd1', 'site': 'BlackRock_Professional'},
+    'HKEX':                     {'tenant': 'hkex',       'wd': 'wd3', 'site': 'HKEXCareerPage'},
+    'Fidelity International':   {'tenant': 'fil',        'wd': 'wd3', 'site': '001'},
+    'State Street':             {'tenant': 'statestreet','wd': 'wd1', 'site': 'Global'},
+}
+
+# Goldman Sachs uses a custom GraphQL scraper — no token needed
+GOLDMAN_COMPANIES = ['Goldman Sachs Hong Kong']
+
+# JPMorgan uses Oracle HCM Cloud public REST API — no token needed
+JPMORGAN_COMPANIES = ['JPMorgan Chase Hong Kong']
 
 LOCATION_FILTER = 'Hong Kong'
 DESCRIPTION_DELAY = 0.3   # seconds between description API calls
@@ -127,19 +153,22 @@ def scrape_company(db, company: dict, scraper, fetch_descriptions: bool) -> dict
             log(f"  dup  {job['title'][:55]}")
             continue
 
-        # New job — fetch full description if requested
+        # New job — save description (inline if available, else fetch separately)
         new_count += 1
         log(f"  NEW  {job['title'][:55]}")
-        platform_id = job.get('greenhouse_id') or job.get('lever_id')
-        if fetch_descriptions and platform_id:
-            try:
-                details = scraper.get_job_details(platform_id)
-                description = details.get('description')
-                if description:
-                    db.update_job_description(job_id, description)
-                time.sleep(DESCRIPTION_DELAY)
-            except Exception:
-                pass  # description is optional, don't fail the whole job
+        if job.get('description'):
+            db.update_job_description(job_id, job['description'])
+        elif fetch_descriptions:
+            platform_id = job.get('greenhouse_id') or job.get('lever_id') or job.get('workday_path') or job.get('jpmorgan_id')
+            if platform_id:
+                try:
+                    details = scraper.get_job_details(platform_id)
+                    description = details.get('description')
+                    if description:
+                        db.update_job_description(job_id, description)
+                    time.sleep(DESCRIPTION_DELAY)
+                except Exception:
+                    pass  # description is optional, don't fail the whole job
 
     duration = time.time() - start
     db.update_company_scraped(company_id)
@@ -193,8 +222,40 @@ def scrape_all(fetch_descriptions: bool = True):
         if missing_lv:
             warn(f"Lever — not in DB (run seed): {missing_lv}")
 
-        total = len(greenhouse_companies) + len(lever_companies)
-        log(f"{total} companies to scrape ({len(greenhouse_companies)} Greenhouse, {len(lever_companies)} Lever)\n")
+        # ── Workday companies ─────────────────────────────────────
+        workday_companies = [
+            company_by_name[name]
+            for name in WORKDAY_TOKENS
+            if name in company_by_name
+        ]
+        missing_wd = [name for name in WORKDAY_TOKENS if name not in company_by_name]
+        if missing_wd:
+            warn(f"Workday — not in DB (run seed): {missing_wd}")
+
+        # ── Goldman Sachs (custom GraphQL) ────────────────────────
+        goldman_companies = [
+            company_by_name[name]
+            for name in GOLDMAN_COMPANIES
+            if name in company_by_name
+        ]
+        missing_gs = [name for name in GOLDMAN_COMPANIES if name not in company_by_name]
+        if missing_gs:
+            warn(f"Goldman — not in DB (run seed): {missing_gs}")
+
+        # ── JPMorgan (Oracle HCM) ─────────────────────────────────
+        jpmorgan_companies = [
+            company_by_name[name]
+            for name in JPMORGAN_COMPANIES
+            if name in company_by_name
+        ]
+        missing_jpm = [name for name in JPMORGAN_COMPANIES if name not in company_by_name]
+        if missing_jpm:
+            warn(f"JPMorgan — not in DB (run seed): {missing_jpm}")
+
+        total = (len(greenhouse_companies) + len(lever_companies) + len(workday_companies)
+                 + len(goldman_companies) + len(jpmorgan_companies))
+        log(f"{total} companies to scrape ({len(greenhouse_companies)} Greenhouse, {len(lever_companies)} Lever, "
+            f"{len(workday_companies)} Workday, {len(goldman_companies)} Goldman, {len(jpmorgan_companies)} JPMorgan)\n")
 
         for company in greenhouse_companies:
             group(company['name'])
@@ -219,6 +280,67 @@ def scrape_all(fetch_descriptions: bool = True):
         for company in lever_companies:
             group(company['name'])
             scraper = LeverScraper(company['name'], LEVER_TOKENS[company['name']])
+            result = scrape_company(db, company, scraper, fetch_descriptions)
+            results.append(result)
+
+            if result['status'] == 'skipped':
+                warn(f"Skipped: {result['reason']}")
+            elif result['status'] == 'failed':
+                error(f"Failed: {result.get('error', 'unknown')}")
+            else:
+                log(
+                    f"Done — {result['new']} new, "
+                    f"{result['duplicates']} dupes, "
+                    f"{result['found']} HK jobs ({result.get('duration', 0)}s)"
+                )
+            endgroup()
+            time.sleep(COMPANY_DELAY)
+
+        # ── Workday companies ─────────────────────────────────────
+        for company in workday_companies:
+            group(company['name'])
+            cfg = WORKDAY_TOKENS[company['name']]
+            scraper = WorkdayScraper(company['name'], cfg['tenant'], cfg['wd'], cfg['site'])
+            result = scrape_company(db, company, scraper, fetch_descriptions)
+            results.append(result)
+
+            if result['status'] == 'skipped':
+                warn(f"Skipped: {result['reason']}")
+            elif result['status'] == 'failed':
+                error(f"Failed: {result.get('error', 'unknown')}")
+            else:
+                log(
+                    f"Done — {result['new']} new, "
+                    f"{result['duplicates']} dupes, "
+                    f"{result['found']} HK jobs ({result.get('duration', 0)}s)"
+                )
+            endgroup()
+            time.sleep(COMPANY_DELAY)
+
+        # ── JPMorgan (Oracle HCM) ─────────────────────────────────
+        for company in jpmorgan_companies:
+            group(company['name'])
+            scraper = JPMorganScraper(company['name'])
+            result = scrape_company(db, company, scraper, fetch_descriptions)
+            results.append(result)
+
+            if result['status'] == 'skipped':
+                warn(f"Skipped: {result['reason']}")
+            elif result['status'] == 'failed':
+                error(f"Failed: {result.get('error', 'unknown')}")
+            else:
+                log(
+                    f"Done — {result['new']} new, "
+                    f"{result['duplicates']} dupes, "
+                    f"{result['found']} HK jobs ({result.get('duration', 0)}s)"
+                )
+            endgroup()
+            time.sleep(COMPANY_DELAY)
+
+        # ── Goldman Sachs (custom GraphQL) ────────────────────────
+        for company in goldman_companies:
+            group(company['name'])
+            scraper = GoldmanScraper(company['name'])
             result = scrape_company(db, company, scraper, fetch_descriptions)
             results.append(result)
 
