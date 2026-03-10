@@ -29,6 +29,7 @@ sys.path.append(str(Path(__file__).parent))
 import anthropic
 from dotenv import load_dotenv
 from models.db import get_db
+from utils import strip_html
 
 load_dotenv()
 
@@ -152,8 +153,7 @@ def score_single(client: anthropic.Anthropic, cv: str, job: dict) -> tuple[float
     """
     job_text = f"Company: {job['company_name']}\nTitle: {job['title']}"
     if job.get('description'):
-        desc = re.sub(r'<[^>]+>', ' ', job['description'])
-        desc = re.sub(r'\s+', ' ', desc).strip()[:2000]
+        desc = (strip_html(job['description']) or "")[:2000]
         job_text += f"\n\n{desc}"
 
     message = client.messages.create(
@@ -178,8 +178,7 @@ def score_batch(client: anthropic.Anthropic, cv: str, jobs: list[dict]) -> dict[
     """
     jobs_text = "\n\n".join(
         f"Job {i + 1}: {job['company_name']} — {job['title']}"
-        + (f"\n{re.sub(chr(60) + '[^>]+' + chr(62), ' ', job['description'])[:800].strip()}"
-           if job.get('description') else "")
+        + (f"\n{(strip_html(job['description']) or '')[:800]}" if job.get('description') else "")
         for i, job in enumerate(jobs)
     )
 
