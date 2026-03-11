@@ -159,7 +159,7 @@ def build_html(jobs: list) -> str:
   <tr>
     <td style="padding:24px 32px;background:#f9fafb;border-top:1px solid #e5e7eb;margin-top:24px;">
       <p style="margin:0;font-size:11px;color:#9ca3af;text-align:center;">
-        HK Job Aggregator · Greenhouse scraper · {len(jobs)} new jobs across {companies} companies
+        HK Job Aggregator · Greenhouse + Workday · {len(jobs)} new jobs across {companies} companies
       </p>
     </td>
   </tr>
