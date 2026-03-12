@@ -125,6 +125,12 @@ def test_database():
             print(f"  Jobs to notify before: {len(jobs_to_notify)}")
             print(f"  Jobs to notify after: {len(jobs_to_notify_after)}\n")
 
+        # Cleanup — remove test data so prod DB stays clean
+        print("Cleanup: removing test data...")
+        cur = db._cursor()
+        cur.execute("DELETE FROM companies WHERE name = 'Test Company'")
+        print("✓ Test data removed\n")
+
     print("=" * 60)
     print("All tests completed!")
     print("=" * 60)
