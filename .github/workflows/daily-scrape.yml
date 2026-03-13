@@ -34,9 +34,9 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
-          echo "::group::Scraping Greenhouse companies"
+          echo "::group::Scraping jobs (Greenhouse + Workday)"
           echo "Started at $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
-          python scrape_all.py --no-descriptions
+          python scrape_all.py
           echo "::endgroup::"
 
       - name: Score new jobs
@@ -67,6 +67,40 @@ jobs:
           echo "Started at $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
           python emailer.py
           echo "::endgroup::"
+
+      - name: Notify on failure
+        if: failure()
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          NOTIFY_EMAIL: ${{ secrets.NOTIFY_EMAIL }}
+          SCRAPE_STATUS: ${{ steps.scrape.outcome }}
+          SCORE_STATUS:  ${{ steps.score.outcome }}
+          EMAIL_STATUS:  ${{ steps.email.outcome }}
+        run: |
+          python - <<'EOF'
+          import os, smtplib
+          from email.mime.text import MIMEText
+          gmail   = os.environ["GMAIL_ADDRESS"]
+          pw      = os.environ["GMAIL_APP_PASSWORD"]
+          recipients = [a.strip() for a in os.environ.get("NOTIFY_EMAIL","").split(",") if a.strip()]
+          body = (
+            f"HK Job Aggregator pipeline FAILED.\n\n"
+            f"  Scrape : {os.environ.get('SCRAPE_STATUS')}\n"
+            f"  Score  : {os.environ.get('SCORE_STATUS')}\n"
+            f"  Email  : {os.environ.get('EMAIL_STATUS')}\n\n"
+            f"Check the Actions tab for details."
+          )
+          msg = MIMEText(body)
+          msg["Subject"] = "[HK Jobs] ⚠ Pipeline failed"
+          msg["From"] = gmail
+          msg["To"] = ", ".join(recipients)
+          with smtplib.SMTP_SSL("smtp.gmail.com", 465) as s:
+            s.login(gmail, pw)
+            s.sendmail(gmail, recipients, msg.as_string())
+          print("Failure notification sent.")
+          EOF
 
       - name: Write job summary
         if: always()
