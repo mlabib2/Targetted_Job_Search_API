@@ -16,6 +16,7 @@ from datetime import datetime
 sys.path.append(str(Path(__file__).parent))
 
 from scrapers.greenhouse_scraper import GreenhouseScraper
+from scrapers.lever_scraper import LeverScraper
 from models.db import get_db
 
 # GitHub Actions log helpers
@@ -50,29 +51,30 @@ def error(msg):
         print(f"  ✗ {msg}", flush=True)
 
 
-# Greenhouse board tokens for known companies.
-# Key must match the 'name' field in the companies table exactly.
+# Board tokens for known companies.
+# Keys must match the 'name' field in the companies table exactly.
 GREENHOUSE_TOKENS = {
-    # Confirmed working — sorted by HK job count
-    'Jane Street':                      'janestreet',
-    'Qube Research & Technologies':     'quberesearchandtechnologies',
-    'Point72':                          'point72',
-    'Squarepoint Capital':              'squarepointcapital',
-    'Flow Traders':                     'flowtraders',
-    'Jump Trading':                     'jumptrading',
-    'Tower Research Capital':           'towerresearchcapital',
-    'Schonfeld':                        'schonfeld',
-    'IMC Trading':                      'imc',
-    'Man Group':                        'mangroup',
-    'WorldQuant':                       'worldquant',
-    'Graham Capital Management':        'grahamcapitalmanagement',
-    # Valid boards, currently 0 HK jobs but worth monitoring
-    'AQR':                              'aqr',
-    'Marshall Wace':                    'marshallwace',
-    'Winton':                           'winton',
-    'Akuna Capital':                    'akunacapital',
-    'ExodusPoint':                      'exoduspoint',
-    'PDT Partners':                     'pdtpartners',
+    # Confirmed working — sorted by HK job count (verified May 2026)
+    'Qube Research & Technologies':     'quberesearchandtechnologies',  # 24 HK jobs
+    'Jane Street':                      'janestreet',                    # 17 HK jobs
+    'Point72':                          'point72',                       # 9 HK jobs
+    'Squarepoint Capital':              'squarepointcapital',            # 9 HK jobs
+    'Tower Research Capital':           'towerresearchcapital',          # 7 HK jobs
+    'Flow Traders':                     'flowtraders',                   # 6 HK jobs
+    'Schonfeld':                        'schonfeld',                     # 6 HK jobs
+    'Jump Trading':                     'jumptrading',                   # 4 HK jobs
+    'IMC Trading':                      'imc',                           # 2 HK jobs
+    'Man Group':                        'mangroup',                      # 2 HK jobs
+    'WorldQuant':                       'worldquant',                    # 1 HK job
+    'DRW':                              'drweng',                        # 1 HK job
+    'Hudson River Trading':             'wehrtyou',                      # 1 HK job
+}
+
+LEVER_TOKENS = {
+    # NOTE: Citadel (hedge fund) API returns 404 — board may be private, pending investigation
+    # Removed: Two Sigma (custom site careers.twosigma.com, not Lever)
+    # Removed: Millennium Management (uses Eightfold at career.mlp.com, not Lever)
+    # Removed: Hudson River Trading (moved to Greenhouse above, token: wehrtyou)
 }
 
 LOCATION_FILTER = 'Hong Kong'
@@ -80,25 +82,17 @@ DESCRIPTION_DELAY = 0.3   # seconds between description API calls
 COMPANY_DELAY = 1.0       # seconds between companies
 
 
-def scrape_company(db, company: dict, fetch_descriptions: bool) -> dict:
+def scrape_company(db, company: dict, scraper, fetch_descriptions: bool) -> dict:
     """
-    Scrape one Greenhouse company and save jobs to DB.
+    Scrape one company and save jobs to DB. Platform-agnostic — works with
+    any scraper that implements scrape_jobs() and get_job_details().
     Returns a result dict summarising the run.
     """
     name = company['name']
     company_id = company['id']
 
-    token = GREENHOUSE_TOKENS.get(name)
-    if not token:
-        return {
-            'company': name,
-            'status': 'skipped',
-            'reason': 'no board token configured',
-        }
-
     start = time.time()
-    scraper = GreenhouseScraper(name, token)
-    log(f"Fetching {name} ({token})...")
+    log(f"Fetching {name} ({scraper.board_token})...")
 
     try:
         jobs = scraper.scrape_jobs(location_filter=LOCATION_FILTER)
@@ -136,9 +130,10 @@ def scrape_company(db, company: dict, fetch_descriptions: bool) -> dict:
         # New job — fetch full description if requested
         new_count += 1
         log(f"  NEW  {job['title'][:55]}")
-        if fetch_descriptions and job.get('greenhouse_id'):
+        platform_id = job.get('greenhouse_id') or job.get('lever_id')
+        if fetch_descriptions and platform_id:
             try:
-                details = scraper.get_job_details(job['greenhouse_id'])
+                details = scraper.get_job_details(platform_id)
                 description = details.get('description')
                 if description:
                     db.update_job_description(job_id, description)
@@ -168,7 +163,7 @@ def scrape_company(db, company: dict, fetch_descriptions: bool) -> dict:
 
 def scrape_all(fetch_descriptions: bool = True):
     log("=" * 55)
-    log("HK Job Aggregator — Greenhouse Scraper")
+    log("HK Job Aggregator — Scraper (Greenhouse + Lever)")
     log(f"Mode: {'full (with descriptions)' if fetch_descriptions else 'metadata only'}")
     log("=" * 55)
 
@@ -177,20 +172,54 @@ def scrape_all(fetch_descriptions: bool = True):
     with get_db() as db:
         all_companies = db.get_active_companies()
         company_by_name = {c['name']: c for c in all_companies}
+
+        # ── Greenhouse companies ──────────────────────────────────
         greenhouse_companies = [
             company_by_name[name]
             for name in GREENHOUSE_TOKENS
             if name in company_by_name
         ]
-        missing = [name for name in GREENHOUSE_TOKENS if name not in company_by_name]
-        if missing:
-            warn(f"Not in DB (run seed): {missing}")
+        missing_gh = [name for name in GREENHOUSE_TOKENS if name not in company_by_name]
+        if missing_gh:
+            warn(f"Greenhouse — not in DB (run seed): {missing_gh}")
 
-        log(f"{len(greenhouse_companies)} companies to scrape\n")
+        # ── Lever companies ───────────────────────────────────────
+        lever_companies = [
+            company_by_name[name]
+            for name in LEVER_TOKENS
+            if name in company_by_name
+        ]
+        missing_lv = [name for name in LEVER_TOKENS if name not in company_by_name]
+        if missing_lv:
+            warn(f"Lever — not in DB (run seed): {missing_lv}")
+
+        total = len(greenhouse_companies) + len(lever_companies)
+        log(f"{total} companies to scrape ({len(greenhouse_companies)} Greenhouse, {len(lever_companies)} Lever)\n")
 
         for company in greenhouse_companies:
             group(company['name'])
-            result = scrape_company(db, company, fetch_descriptions)
+            scraper = GreenhouseScraper(company['name'], GREENHOUSE_TOKENS[company['name']])
+            result = scrape_company(db, company, scraper, fetch_descriptions)
+            results.append(result)
+
+            if result['status'] == 'skipped':
+                warn(f"Skipped: {result['reason']}")
+            elif result['status'] == 'failed':
+                error(f"Failed: {result.get('error', 'unknown')}")
+            else:
+                log(
+                    f"Done — {result['new']} new, "
+                    f"{result['duplicates']} dupes, "
+                    f"{result['found']} HK jobs ({result.get('duration', 0)}s)"
+                )
+            endgroup()
+            time.sleep(COMPANY_DELAY)
+
+        # ── Lever companies ───────────────────────────────────────
+        for company in lever_companies:
+            group(company['name'])
+            scraper = LeverScraper(company['name'], LEVER_TOKENS[company['name']])
+            result = scrape_company(db, company, scraper, fetch_descriptions)
             results.append(result)
 
             if result['status'] == 'skipped':

@@ -140,47 +140,30 @@ TARGET_COMPANIES = [
         'ats_platform': 'Greenhouse',
         'notes': 'HFT prop trading'
     },
+    # Other firms with confirmed HK presence (custom/unsupported ATS or pending)
     {
-        'name': 'Graham Capital Management',
-        'career_url': 'https://www.grahamcapital.com/careers.aspx',
-        'ats_platform': 'Greenhouse',
-        'notes': 'Macro/quant hedge fund'
+        'name': 'Two Sigma',
+        'career_url': 'https://careers.twosigma.com/',
+        'ats_platform': 'Custom',
+        'notes': 'Quant hedge fund — custom careers site, no public API, 0 HK jobs currently'
     },
     {
-        'name': 'AQR',
-        'career_url': 'https://www.aqr.com/About-Us/Careers',
+        'name': 'Hudson River Trading',
+        'career_url': 'https://boards.greenhouse.io/wehrtyou',
         'ats_platform': 'Greenhouse',
-        'notes': 'Quant hedge fund'
+        'notes': 'HFT / market maker (board token: wehrtyou)'
     },
     {
-        'name': 'Marshall Wace',
-        'career_url': 'https://www.marshallwace.com/careers/',
-        'ats_platform': 'Greenhouse',
-        'notes': 'Long/short equity hedge fund'
+        'name': 'Millennium Management',
+        'career_url': 'https://career.mlp.com/careers',
+        'ats_platform': 'Eightfold',
+        'notes': 'Multi-strat hedge fund — 19 HK jobs, Eightfold ATS (not scrapeable yet)'
     },
     {
-        'name': 'Winton',
-        'career_url': 'https://www.winton.com/careers',
+        'name': 'Citadel',
+        'career_url': 'https://www.citadel.com/careers/',
         'ats_platform': 'Greenhouse',
-        'notes': 'Quant/systematic hedge fund'
-    },
-    {
-        'name': 'Akuna Capital',
-        'career_url': 'https://akunacapital.com/careers',
-        'ats_platform': 'Greenhouse',
-        'notes': 'Options market maker'
-    },
-    {
-        'name': 'ExodusPoint',
-        'career_url': 'https://www.exoduspoint.com/careers/',
-        'ats_platform': 'Greenhouse',
-        'notes': 'Multi-strategy hedge fund'
-    },
-    {
-        'name': 'PDT Partners',
-        'career_url': 'https://www.pdtpartners.com/careers.html',
-        'ats_platform': 'Greenhouse',
-        'notes': 'Quant hedge fund, spun out of Morgan Stanley'
+        'notes': 'Quant / multi-strat hedge fund — board token unconfirmed, blocks 403'
     },
 ]
 
