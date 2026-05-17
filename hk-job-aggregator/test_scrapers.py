@@ -179,6 +179,17 @@ def test_standard_chartered(result: Result):
         result.fail(msg)
 
 
+def test_millennium(result: Result):
+    from scrapers.millennium_scraper import MillenniumScraper
+    scraper = MillenniumScraper("Millennium Management")
+    jobs = scraper.scrape_jobs(location_filter=LOCATION_FILTER)
+    ok, msg = _validate(jobs)
+    if ok:
+        result.ok(msg, jobs)
+    else:
+        result.fail(msg)
+
+
 # ── Full-platform sweep (--full mode) ─────────────────────────────────────────
 
 GREENHOUSE_ALL = {
@@ -263,6 +274,12 @@ def run_suite(fast: bool = False, full: bool = False) -> List[Result]:
     # ── Standard Chartered (J2W sitemap) ────────────────────────────────────
     r = Result("Standard Chartered (J2W sitemap)")
     _run(r, test_standard_chartered)
+    results.append(r)
+    _print_result(r)
+
+    # ── Millennium Management (Eightfold) ────────────────────────────────────
+    r = Result("Millennium Management (Eightfold)")
+    _run(r, test_millennium)
     results.append(r)
     _print_result(r)
 

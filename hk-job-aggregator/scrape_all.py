@@ -21,6 +21,7 @@ from scrapers.workday_scraper import WorkdayScraper
 from scrapers.goldman_scraper import GoldmanScraper
 from scrapers.jpmorgan_scraper import JPMorganScraper
 from scrapers.standard_chartered_scraper import StandardCharteredScraper
+from scrapers.millennium_scraper import MillenniumScraper
 from models.db import get_db
 
 # GitHub Actions log helpers
@@ -110,6 +111,9 @@ JPMORGAN_COMPANIES = ['JPMorgan Chase Hong Kong']
 # Standard Chartered uses J2W/SuccessFactors CSB — scraped via public sitemap
 SCB_COMPANIES = ['Standard Chartered Hong Kong']
 
+# Millennium Management uses Eightfold at career.mlp.com — public API, no auth required
+MILLENNIUM_COMPANIES = ['Millennium Management']
+
 LOCATION_FILTER = 'Hong Kong'
 DESCRIPTION_DELAY = 0.3   # seconds between description API calls
 COMPANY_DELAY = 1.0       # seconds between companies
@@ -167,7 +171,9 @@ def scrape_company(db, company: dict, scraper, fetch_descriptions: bool,
         if job.get('description'):
             db.update_job_description(job_id, job['description'])
         elif fetch_descriptions:
-            platform_id = job.get('greenhouse_id') or job.get('lever_id') or job.get('workday_path') or job.get('jpmorgan_id')
+            platform_id = (job.get('greenhouse_id') or job.get('lever_id')
+                           or job.get('workday_path') or job.get('jpmorgan_id')
+                           or job.get('eightfold_id'))
             if platform_id:
                 try:
                     details = scraper.get_job_details(platform_id)
@@ -270,12 +276,24 @@ def scrape_all(fetch_descriptions: bool = True):
         if missing_scb:
             warn(f"Standard Chartered — not in DB (run seed): {missing_scb}")
 
+        # ── Millennium Management (Eightfold) ─────────────────────
+        millennium_companies = [
+            company_by_name[name]
+            for name in MILLENNIUM_COMPANIES
+            if name in company_by_name
+        ]
+        missing_mlp = [name for name in MILLENNIUM_COMPANIES if name not in company_by_name]
+        if missing_mlp:
+            warn(f"Millennium — not in DB (run seed): {missing_mlp}")
+
         total = (len(greenhouse_companies) + len(lever_companies) + len(workday_companies)
-                 + len(goldman_companies) + len(jpmorgan_companies) + len(scb_companies))
+                 + len(goldman_companies) + len(jpmorgan_companies) + len(scb_companies)
+                 + len(millennium_companies))
         log(f"{total} companies to scrape  "
             f"GH={len(greenhouse_companies)}  LV={len(lever_companies)}  "
             f"WD={len(workday_companies)}  GS={len(goldman_companies)}  "
-            f"JPM={len(jpmorgan_companies)}  SCB={len(scb_companies)}\n")
+            f"JPM={len(jpmorgan_companies)}  SCB={len(scb_companies)}  "
+            f"MLP={len(millennium_companies)}\n")
 
         for company in greenhouse_companies:
             group(company['name'])
@@ -382,6 +400,26 @@ def scrape_all(fetch_descriptions: bool = True):
         for company in scb_companies:
             group(company['name'])
             scraper = StandardCharteredScraper(company['name'])
+            result = scrape_company(db, company, scraper, fetch_descriptions)
+            results.append(result)
+
+            if result['status'] == 'skipped':
+                warn(f"Skipped: {result['reason']}")
+            elif result['status'] == 'failed':
+                error(f"Failed: {result.get('error', 'unknown')}")
+            else:
+                log(
+                    f"Done — {result['new']} new, "
+                    f"{result['duplicates']} dupes, "
+                    f"{result['found']} HK jobs ({result.get('duration', 0)}s)"
+                )
+            endgroup()
+            time.sleep(COMPANY_DELAY)
+
+        # ── Millennium Management (Eightfold) ─────────────────────
+        for company in millennium_companies:
+            group(company['name'])
+            scraper = MillenniumScraper(company['name'])
             result = scrape_company(db, company, scraper, fetch_descriptions)
             results.append(result)
 

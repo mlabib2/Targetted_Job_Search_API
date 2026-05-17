@@ -98,7 +98,7 @@ _Only firms with a confirmed or likely Hong Kong office are tracked here. US/Eur
 
 ---
 
-### ✅ Actively Scraped (28 companies)
+### ✅ Actively Scraped (29 companies)
 
 These all run every day via `scrape_all.py`.
 
@@ -162,7 +162,7 @@ These boards exist and likely have HK jobs, but the ATS itself does not expose a
 |---|---|---|
 | HSBC | Custom (`mycareer.hsbc.com`) | Proprietary ATS, no standard API — largest HK employer |
 | Citi | TalentBrew / Radancy | API always returns `hasContent: false` — JS-rendered, anti-bot protected |
-| Millennium Management | Eightfold (`career.mlp.com`) | ~19 HK jobs confirmed, no public API |
+| ~~Millennium Management~~ | ✓ Now scraped — Eightfold public API, 18 HK jobs | `millennium_scraper.py` |
 | SIG (Susquehanna) | iCIMS (`careers-sig.icims.com`) | iCIMS has no public job listing API |
 | Bank of America | Workday `ghr.wd1/lateral-us` | Only US lateral hires board found; no international Workday board |
 | Nomura | Taleo (`nomuracampus.tal.net`) | Taleo requires authentication |

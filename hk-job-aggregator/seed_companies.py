@@ -194,7 +194,7 @@ TARGET_COMPANIES = [
         'name': 'Millennium Management',
         'career_url': 'https://career.mlp.com/careers',
         'ats_platform': 'Eightfold',
-        'notes': 'Multi-strat hedge fund — 19 HK jobs, Eightfold ATS (not scrapeable yet)'
+        'notes': 'Multi-strat hedge fund — 19 HK jobs. Eightfold public API at career.mlp.com/api/apply/v2/jobs?domain=mlp.com. Scraper: millennium_scraper.py.'
     },
     {
         'name': 'Citadel',
