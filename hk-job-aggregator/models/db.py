@@ -173,6 +173,51 @@ class JobDatabase:
         cur = self._cursor()
         cur.execute("UPDATE jobs SET status = 'seen' WHERE id = %s", (job_id,))
 
+    VALID_STATUSES = {'new', 'seen', 'applied', 'interviewing', 'offer', 'rejected'}
+
+    def set_job_status(self, job_id: int, status: str):
+        """Set application tracking status on a job."""
+        if status not in self.VALID_STATUSES:
+            raise ValueError(f"Invalid status '{status}'. Valid: {sorted(self.VALID_STATUSES)}")
+        cur = self._cursor()
+        cur.execute("UPDATE jobs SET status = %s WHERE id = %s", (status, job_id))
+        return cur.rowcount > 0
+
+    def get_jobs_by_status(self, status: str = None, limit: int = 50) -> List[Dict]:
+        """Get jobs filtered by status, ordered by match score then date."""
+        cur = self._cursor()
+        if status:
+            cur.execute("""
+                SELECT j.id, j.title, c.name AS company, j.url,
+                       j.match_score, j.status, j.first_seen_at
+                FROM jobs j
+                JOIN companies c ON j.company_id = c.id
+                WHERE j.status = %s
+                ORDER BY j.match_score DESC NULLS LAST, j.first_seen_at DESC
+                LIMIT %s
+            """, (status, limit))
+        else:
+            cur.execute("""
+                SELECT j.id, j.title, c.name AS company, j.url,
+                       j.match_score, j.status, j.first_seen_at
+                FROM jobs j
+                JOIN companies c ON j.company_id = c.id
+                ORDER BY j.match_score DESC NULLS LAST, j.first_seen_at DESC
+                LIMIT %s
+            """, (limit,))
+        return [dict(row) for row in cur.fetchall()]
+
+    def get_application_stats(self) -> Dict:
+        """Count jobs in each application-relevant status."""
+        cur = self._cursor()
+        cur.execute("""
+            SELECT status, COUNT(*) AS cnt
+            FROM jobs
+            GROUP BY status
+            ORDER BY status
+        """)
+        return {row['status']: row['cnt'] for row in cur.fetchall()}
+
     def get_new_jobs(self) -> List[Dict]:
         """Get all new unscored jobs"""
         cur = self._cursor()

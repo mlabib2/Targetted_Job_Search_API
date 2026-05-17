@@ -202,6 +202,24 @@ TARGET_COMPANIES = [
         'ats_platform': 'Unknown',
         'notes': 'Greenhouse 404, Lever 404, careers page returns 403 to scrapers — manually check in browser'
     },
+    {
+        'name': 'Standard Chartered Hong Kong',
+        'career_url': 'https://jobs.standardchartered.com',
+        'ats_platform': 'SuccessFactors J2W',
+        'notes': 'J2W/CSB site (ssoCompanyId=standardch) — fully JS-rendered, no JSON API. Scraped via public sitemap: 112 HK jobs confirmed May 2026. Locations: Central, Kwun Tong, Quarry Bay.'
+    },
+    {
+        'name': 'Engineers Gate',
+        'career_url': 'https://boards.greenhouse.io/engineersgate',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Quant/systematic hedge fund — token: engineersgate, 2 HK jobs confirmed May 2026'
+    },
+    {
+        'name': 'Brevan Howard',
+        'career_url': 'https://brevanhoward.wd3.myworkdayjobs.com/BH_ExternalCareers',
+        'ats_platform': 'Workday',
+        'notes': 'Global macro hedge fund, HK office — tenant: brevanhoward, wd3, site: BH_ExternalCareers. Confirmed 200 OK May 2026.'
+    },
 ]
 
 

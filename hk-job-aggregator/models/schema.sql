@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS jobs (
     match_score   DOUBLE PRECISION,                -- 0.0–1.0; NULL = not yet scored
     match_reasons JSONB,                           -- ["reason 1", "reason 2"]
 
-    status       TEXT DEFAULT 'new',               -- 'new', 'seen', 'applied', 'archived'
+    status       TEXT DEFAULT 'new',               -- 'new', 'seen', 'applied', 'interviewing', 'offer', 'rejected'
     notified_at  TIMESTAMPTZ,
 
     posted_date   TIMESTAMPTZ,

@@ -20,6 +20,7 @@ from scrapers.lever_scraper import LeverScraper
 from scrapers.workday_scraper import WorkdayScraper
 from scrapers.goldman_scraper import GoldmanScraper
 from scrapers.jpmorgan_scraper import JPMorganScraper
+from scrapers.standard_chartered_scraper import StandardCharteredScraper
 from models.db import get_db
 
 # GitHub Actions log helpers
@@ -73,6 +74,7 @@ GREENHOUSE_TOKENS = {
     'Hudson River Trading':             'wehrtyou',                      # 1 HK job
     'Optiver':                          'optiverus',                     # 3 HK jobs confirmed May 2026
     'Virtu Financial':                  'virtu',                         # 2 HK jobs confirmed May 2026
+    'Engineers Gate':                   'engineersgate',                 # 2 HK jobs confirmed May 2026
 }
 
 LEVER_TOKENS = {
@@ -92,9 +94,11 @@ WORKDAY_TOKENS = {
     'Deutsche Bank':            {'tenant': 'db',         'wd': 'wd3', 'site': 'DBWebsite'},
     'Macquarie':                {'tenant': 'mq',         'wd': 'wd3', 'site': 'CareersatMQ'},
     'BlackRock':                {'tenant': 'blackrock',  'wd': 'wd1', 'site': 'BlackRock_Professional'},
-    'HKEX':                     {'tenant': 'hkex',       'wd': 'wd3', 'site': 'HKEXCareerPage'},
+    # HKEX uses internal location codes ("HK-TWO ES 10/F") — filter on "HK-" not "Hong Kong"
+    'HKEX':                     {'tenant': 'hkex',       'wd': 'wd3', 'site': 'HKEXCareerPage', 'location_filter': 'HK-'},
     'Fidelity International':   {'tenant': 'fil',        'wd': 'wd3', 'site': '001'},
     'State Street':             {'tenant': 'statestreet','wd': 'wd1', 'site': 'Global'},
+    'Brevan Howard':            {'tenant': 'brevanhoward', 'wd': 'wd3', 'site': 'BH_ExternalCareers'},
 }
 
 # Goldman Sachs uses a custom GraphQL scraper — no token needed
@@ -103,12 +107,16 @@ GOLDMAN_COMPANIES = ['Goldman Sachs Hong Kong']
 # JPMorgan uses Oracle HCM Cloud public REST API — no token needed
 JPMORGAN_COMPANIES = ['JPMorgan Chase Hong Kong']
 
+# Standard Chartered uses J2W/SuccessFactors CSB — scraped via public sitemap
+SCB_COMPANIES = ['Standard Chartered Hong Kong']
+
 LOCATION_FILTER = 'Hong Kong'
 DESCRIPTION_DELAY = 0.3   # seconds between description API calls
 COMPANY_DELAY = 1.0       # seconds between companies
 
 
-def scrape_company(db, company: dict, scraper, fetch_descriptions: bool) -> dict:
+def scrape_company(db, company: dict, scraper, fetch_descriptions: bool,
+                   location_filter: str = LOCATION_FILTER) -> dict:
     """
     Scrape one company and save jobs to DB. Platform-agnostic — works with
     any scraper that implements scrape_jobs() and get_job_details().
@@ -121,7 +129,7 @@ def scrape_company(db, company: dict, scraper, fetch_descriptions: bool) -> dict
     log(f"Fetching {name} ({scraper.board_token})...")
 
     try:
-        jobs = scraper.scrape_jobs(location_filter=LOCATION_FILTER)
+        jobs = scraper.scrape_jobs(location_filter=location_filter)
     except Exception as e:
         duration = time.time() - start
         db.log_scrape(company_id, 'failed', error=str(e), duration=duration)
@@ -192,7 +200,7 @@ def scrape_company(db, company: dict, scraper, fetch_descriptions: bool) -> dict
 
 def scrape_all(fetch_descriptions: bool = True):
     log("=" * 55)
-    log("HK Job Aggregator — Scraper (Greenhouse + Lever)")
+    log("HK Job Aggregator — Scraper")
     log(f"Mode: {'full (with descriptions)' if fetch_descriptions else 'metadata only'}")
     log("=" * 55)
 
@@ -252,10 +260,22 @@ def scrape_all(fetch_descriptions: bool = True):
         if missing_jpm:
             warn(f"JPMorgan — not in DB (run seed): {missing_jpm}")
 
+        # ── Standard Chartered (J2W sitemap) ─────────────────────
+        scb_companies = [
+            company_by_name[name]
+            for name in SCB_COMPANIES
+            if name in company_by_name
+        ]
+        missing_scb = [name for name in SCB_COMPANIES if name not in company_by_name]
+        if missing_scb:
+            warn(f"Standard Chartered — not in DB (run seed): {missing_scb}")
+
         total = (len(greenhouse_companies) + len(lever_companies) + len(workday_companies)
-                 + len(goldman_companies) + len(jpmorgan_companies))
-        log(f"{total} companies to scrape ({len(greenhouse_companies)} Greenhouse, {len(lever_companies)} Lever, "
-            f"{len(workday_companies)} Workday, {len(goldman_companies)} Goldman, {len(jpmorgan_companies)} JPMorgan)\n")
+                 + len(goldman_companies) + len(jpmorgan_companies) + len(scb_companies))
+        log(f"{total} companies to scrape  "
+            f"GH={len(greenhouse_companies)}  LV={len(lever_companies)}  "
+            f"WD={len(workday_companies)}  GS={len(goldman_companies)}  "
+            f"JPM={len(jpmorgan_companies)}  SCB={len(scb_companies)}\n")
 
         for company in greenhouse_companies:
             group(company['name'])
@@ -301,7 +321,8 @@ def scrape_all(fetch_descriptions: bool = True):
             group(company['name'])
             cfg = WORKDAY_TOKENS[company['name']]
             scraper = WorkdayScraper(company['name'], cfg['tenant'], cfg['wd'], cfg['site'])
-            result = scrape_company(db, company, scraper, fetch_descriptions)
+            loc_filter = cfg.get('location_filter', LOCATION_FILTER)
+            result = scrape_company(db, company, scraper, fetch_descriptions, location_filter=loc_filter)
             results.append(result)
 
             if result['status'] == 'skipped':
@@ -341,6 +362,26 @@ def scrape_all(fetch_descriptions: bool = True):
         for company in goldman_companies:
             group(company['name'])
             scraper = GoldmanScraper(company['name'])
+            result = scrape_company(db, company, scraper, fetch_descriptions)
+            results.append(result)
+
+            if result['status'] == 'skipped':
+                warn(f"Skipped: {result['reason']}")
+            elif result['status'] == 'failed':
+                error(f"Failed: {result.get('error', 'unknown')}")
+            else:
+                log(
+                    f"Done — {result['new']} new, "
+                    f"{result['duplicates']} dupes, "
+                    f"{result['found']} HK jobs ({result.get('duration', 0)}s)"
+                )
+            endgroup()
+            time.sleep(COMPANY_DELAY)
+
+        # ── Standard Chartered (J2W sitemap) ─────────────────────
+        for company in scb_companies:
+            group(company['name'])
+            scraper = StandardCharteredScraper(company['name'])
             result = scrape_company(db, company, scraper, fetch_descriptions)
             results.append(result)
 
