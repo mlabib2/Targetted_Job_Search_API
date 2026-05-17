@@ -47,6 +47,9 @@ FILTER_FUNCTIONS = [
     r"\bmarketing\b", r"\bsales\b",
     r"\bgraphic design\b", r"\bcontent writer\b", r"\bcopywriter\b",
     r"\binterior design\b", r"\bfacilities\b",
+    r"\bcompliance\b",         # business-side compliance (not quant/tech)
+    r"\bbusiness unit\b",      # ops/management roles
+    r"\boperations manager\b",
 ]
 
 # Senior roles the rubric always scores 0.00–0.20 — skip the API call entirely.
