@@ -47,8 +47,11 @@ FILTER_FUNCTIONS = [
     r"\bmarketing\b", r"\bsales\b",
     r"\bgraphic design\b", r"\bcontent writer\b", r"\bcopywriter\b",
     r"\binterior design\b", r"\bfacilities\b",
-    r"\bcompliance\b",         # business-side compliance (not quant/tech)
-    r"\bbusiness unit\b",      # ops/management roles
+    r"\bcompliance officer\b",   # business-side compliance only
+    r"\bcompliance manager\b",
+    r"\bcompliance analyst\b",
+    r"\bcompliance counsel\b",
+    r"\bbusiness unit\b",        # ops/management roles
     r"\boperations manager\b",
 ]
 
@@ -87,15 +90,16 @@ SCORING RUBRIC (0.0–1.0) — experience level is the #1 factor:
 - 0.00–0.20: Explicitly senior (VP, Director, MD, Head of, Principal, 5+ yrs) OR completely wrong function
 
 BOOST score for:
-- Title contains: Graduate, New Grad, Campus, Associate, Junior, Entry-Level, Analyst
+- Title contains: Graduate, New Grad, Campus, Associate, Junior, Entry-Level, Analyst, Developer, Engineer, Trader, Quant
 - Requires 0–2 years experience
-- Mentions: C++, Python, trading systems, quant/algo, options/derivatives, market data, hedge fund tech
+- Mentions: C++, Python, trading systems, quant/algo, options/derivatives, market data, hedge fund tech, trade desk, middle office, front office technology, trade operations, settlement, reconciliation, risk systems
 - Located in Hong Kong
+- Role type: software engineer/developer, quant researcher, trader, middle office analyst/associate, trade support, technology analyst — ALL are valid targets
 
 PENALISE score for:
 - Title or requirements: Senior, VP, Vice President, Director, Managing Director, Head of, Principal (unless clearly entry track)
 - Requires 3+ years experience
-- Non-technical functions: operations management, compliance, legal, sales, finance/accounting (not quant)
+- Non-technical functions: compliance (non-tech), legal, sales, finance/accounting (not quant), HR, marketing
 
 You will receive a CV and a numbered list of jobs.
 Respond ONLY with a valid JSON array, one object per job, in order:
@@ -115,8 +119,8 @@ Skills: C++, Python, SQL, FastAPI, PostgreSQL, Redis, Docker, AWS, Bloomberg, Qu
 
 SCORING — experience level is the #1 factor:
 - 0.85–1.00: Campus/graduate/new grad/entry-level, 0–1 yr experience, strong stack match
-- 0.65–0.85: Junior role (1–2 yrs), strong overlap with trading systems or quant/backend tech
-- 0.45–0.65: Partial fit — relevant domain but experience gap or secondary skills needed
+- 0.65–0.85: Junior role (1–2 yrs), strong overlap with: trading systems, quant/backend tech, middle office, trade support, Python/C++ developer, trader roles
+- 0.45–0.65: Partial fit — relevant domain (finance tech, developer, trading) but experience gap or secondary skills needed
 - 0.20–0.45: Too senior (3+ yrs required) or limited overlap
 - 0.00–0.20: VP/MD/Director/Head of, 5+ yrs required, or wrong function entirely
 
