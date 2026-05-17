@@ -49,6 +49,24 @@ FILTER_FUNCTIONS = [
     r"\binterior design\b", r"\bfacilities\b",
 ]
 
+# Senior roles the rubric always scores 0.00–0.20 — skip the API call entirely.
+# Patterns are word-boundary matched on the title.
+FILTER_SENIORITY = [
+    r"\bvice president\b", r"\bvp[\s,]", r"\bsvp\b", r"\bevp\b", r"\bmvp\b",
+    r"\bdirector\b", r"\bmanaging director\b", r"\bmd[\s,]",
+    r"\bhead of\b", r"\bglobal head\b", r"\bregional head\b",
+    r"\bchief\b",                          # CTO, CFO, Chief Risk Officer, etc.
+    r"\bprincipal\b",                      # always senior IC in quant/tech
+    r"\bpartner\b",
+    r"\bmanaging partner\b",
+]
+
+# Non-job entries that companies sometimes post to ATS boards.
+FILTER_NON_JOB = [
+    r"\bconnect with us\b", r"\bmeet us at\b", r"\bjoin us at\b",
+    r"\bvisit us at\b", r"\bexplore opportunities\b", r"\bcoffee chat\b",
+]
+
 BATCH_SYSTEM_PROMPT = """You are evaluating job fit for a specific candidate targeting HK hedge fund and quant trading roles.
 
 CANDIDATE PROFILE:
@@ -114,6 +132,12 @@ def load_cv() -> str:
 def pre_filter(title: str) -> str | None:
     """Returns filter reason if job should be skipped, else None."""
     t = title.lower()
+    for pattern in FILTER_NON_JOB:
+        if re.search(pattern, t):
+            return "Pre-filtered: not a job posting"
+    for pattern in FILTER_SENIORITY:
+        if re.search(pattern, t):
+            return "Pre-filtered: seniority mismatch"
     for pattern in FILTER_FUNCTIONS:
         if re.search(pattern, t):
             return "Pre-filtered: function mismatch"
