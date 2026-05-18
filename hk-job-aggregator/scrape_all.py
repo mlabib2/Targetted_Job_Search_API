@@ -73,6 +73,7 @@ GREENHOUSE_TOKENS = {
     'WorldQuant':                       'worldquant',                    # 1 HK job
     'DRW':                              'drweng',                        # 1 HK job
     'Hudson River Trading':             'wehrtyou',                      # 1 HK job
+    'Interactive Brokers':              'ibkr',                          # 17 HK jobs confirmed May 2026
     'Optiver':                          'optiverus',                     # 3 HK jobs confirmed May 2026
     'Virtu Financial':                  'virtu',                         # 2 HK jobs confirmed May 2026
     'Engineers Gate':                   'engineersgate',                 # 2 HK jobs confirmed May 2026

@@ -68,6 +68,12 @@ TARGET_COMPANIES = [
     },
     # HK-based prop shops and tech-forward firms
     {
+        'name': 'Interactive Brokers',
+        'career_url': 'https://boards.greenhouse.io/ibkr',
+        'ats_platform': 'Greenhouse',
+        'notes': '17 HK jobs confirmed May 2026 — token: ibkr. Clearing, risk, trade support, tech ops roles.'
+    },
+    {
         'name': 'Optiver',
         'career_url': 'https://boards.greenhouse.io/optiverus',
         'ats_platform': 'Greenhouse',

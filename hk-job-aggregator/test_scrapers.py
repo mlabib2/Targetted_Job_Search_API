@@ -206,6 +206,7 @@ GREENHOUSE_ALL = {
     "WorldQuant":                   "worldquant",
     "DRW":                          "drweng",
     "Hudson River Trading":         "wehrtyou",
+    "Interactive Brokers":          "ibkr",
     "Optiver":                      "optiverus",
     "Virtu Financial":              "virtu",
     "Engineers Gate":               "engineersgate",
