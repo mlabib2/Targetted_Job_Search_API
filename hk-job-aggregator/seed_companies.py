@@ -221,6 +221,18 @@ TARGET_COMPANIES = [
         'notes': 'Quant/systematic hedge fund — token: engineersgate, 2 HK jobs confirmed May 2026'
     },
     {
+        'name': 'Wellington Management',
+        'career_url': 'https://wellington.wd5.myworkdayjobs.com/External',
+        'ats_platform': 'Workday',
+        'notes': 'Major asset manager, HK office confirmed. 0 HK jobs May 2026 but board active (123 global) — tenant: wellington, wd5, site: External'
+    },
+    {
+        'name': 'Dimensional Fund Advisors',
+        'career_url': 'https://dimensional.wd5.myworkdayjobs.com/DFA_Careers',
+        'ats_platform': 'Workday',
+        'notes': 'Quant asset manager, HK office confirmed. 0 HK jobs May 2026 but board active (52 global) — tenant: dimensional, wd5, site: DFA_Careers'
+    },
+    {
         'name': 'Brevan Howard',
         'career_url': 'https://brevanhoward.wd3.myworkdayjobs.com/BH_ExternalCareers',
         'ats_platform': 'Workday',

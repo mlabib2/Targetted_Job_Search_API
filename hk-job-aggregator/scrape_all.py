@@ -101,6 +101,8 @@ WORKDAY_TOKENS = {
     'Fidelity International':   {'tenant': 'fil',        'wd': 'wd3', 'site': '001'},
     'State Street':             {'tenant': 'statestreet','wd': 'wd1', 'site': 'Global'},
     'Brevan Howard':            {'tenant': 'brevanhoward', 'wd': 'wd3', 'site': 'BH_ExternalCareers'},
+    'Wellington Management':    {'tenant': 'wellington',   'wd': 'wd5', 'site': 'External'},          # 0 HK now, board active
+    'Dimensional Fund Advisors':{'tenant': 'dimensional',  'wd': 'wd5', 'site': 'DFA_Careers'},       # 0 HK now, board active
 }
 
 # Goldman Sachs uses a custom GraphQL scraper — no token needed
