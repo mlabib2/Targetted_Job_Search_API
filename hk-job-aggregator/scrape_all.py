@@ -93,6 +93,8 @@ GREENHOUSE_TOKENS = {
     'Da Vinci Trading':                  'davinciderivatives',            # 1 HK job confirmed Jul 2026 (of 11 total)
     'Mako Trading':                      'mako',                          # board confirmed working; 0 HK as of Jul 2026 — Mako's own office list (London/Dublin/Amsterdam/Singapore/Sydney/Brisbane/Chengdu) no longer includes HK, kept for future-proofing only
     'Vatic Labs':                        'vaticlabs',                     # board confirmed working; 0 HK as of Jul 2026 — roles are NY/Abu Dhabi/Singapore only, no HK office evidence found, kept for future-proofing only
+    # New additions — May 2026 (from personal target-company list gap-check)
+    'GSA Capital':                       'gsacapital',                    # 9 jobs, all London/New York, 0 HK — incl. "Software Developer" (London). London filter applied below.
 }
 
 # Workable ATS companies — public widget API, no auth required.
@@ -107,6 +109,7 @@ GREENHOUSE_LOCATION_OVERRIDES = {
     'Marshall Wace': 'London',
     'Winton':        'London',
     'PDT Partners':  'London',
+    'GSA Capital':   'London',
 }
 
 LEVER_TOKENS = {

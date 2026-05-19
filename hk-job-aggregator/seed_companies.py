@@ -330,6 +330,13 @@ TARGET_COMPANIES = [
         'ats_platform': 'Greenhouse',
         'notes': 'Quant trading firm — Greenhouse token: vaticlabs, board confirmed working. 0 HK jobs as of July 2026; open roles are New York/Abu Dhabi/Singapore only, no Hong Kong office found on vaticlabs.ai. Kept seeded for future-proofing only.'
     },
+    # New additions — May 2026, from personal target-company list gap-check
+    {
+        'name': 'GSA Capital',
+        'career_url': 'https://boards.greenhouse.io/gsacapital',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Quant hedge fund — Greenhouse token: gsacapital, board confirmed working. 9 jobs, all London/New York, 0 HK as of May 2026 — incl. "Software Developer" (London). Scraped with London filter (GREENHOUSE_LOCATION_OVERRIDES).'
+    },
 ]
 
 
