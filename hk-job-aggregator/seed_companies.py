@@ -337,6 +337,12 @@ TARGET_COMPANIES = [
         'ats_platform': 'Greenhouse',
         'notes': 'Quant hedge fund — Greenhouse token: gsacapital, board confirmed working. 9 jobs, all London/New York, 0 HK as of May 2026 — incl. "Software Developer" (London). Scraped with London filter (GREENHOUSE_LOCATION_OVERRIDES).'
     },
+    {
+        'name': 'Allston Trading',
+        'career_url': 'https://apply.workable.com/allston-trading/',
+        'ats_platform': 'Workable',
+        'notes': 'Chicago prop trading firm — Workable token: allston-trading, board confirmed working (name matches exactly). 0 jobs open as of May 2026; no Hong Kong office evidence found. Kept seeded for future-proofing only.'
+    },
 ]
 
 
