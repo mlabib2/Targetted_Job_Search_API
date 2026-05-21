@@ -343,6 +343,12 @@ TARGET_COMPANIES = [
         'ats_platform': 'Workable',
         'notes': 'Chicago prop trading firm — Workable token: allston-trading, board confirmed working (name matches exactly). 0 jobs open as of May 2026; no Hong Kong office evidence found. Kept seeded for future-proofing only.'
     },
+    {
+        'name': 'Wolverine Trading',
+        'career_url': 'https://apply.workable.com/wolverine/',
+        'ats_platform': 'Workable',
+        'notes': 'Chicago prop trading firm — Workable token: wolverine (board returns name="Wolverine", lower-confidence identity match but no jobs currently open so no false-positive risk). 0 jobs open as of May 2026; no Hong Kong office evidence found. Kept seeded for future-proofing only.'
+    },
 ]
 
 
