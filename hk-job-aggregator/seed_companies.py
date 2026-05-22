@@ -349,6 +349,12 @@ TARGET_COMPANIES = [
         'ats_platform': 'Workable',
         'notes': 'Chicago prop trading firm — Workable token: wolverine (board returns name="Wolverine", lower-confidence identity match but no jobs currently open so no false-positive risk). 0 jobs open as of May 2026; no Hong Kong office evidence found. Kept seeded for future-proofing only.'
     },
+    {
+        'name': 'Quantbox Research',
+        'career_url': 'https://apply.workable.com/quantbox/',
+        'ats_platform': 'Workable',
+        'notes': 'Prop trading/HFT firm — Workable token: quantbox (board returns name="QuantBox"). 0 jobs open as of May 2026; no Hong Kong office evidence found. Kept seeded for future-proofing only.'
+    },
 ]
 
 

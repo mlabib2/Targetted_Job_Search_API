@@ -104,6 +104,7 @@ WORKABLE_TOKENS = {
     # New additions — May 2026 (Chicago prop shops from personal target-company list; 0 HK jobs, kept for future-proofing per Mako/Vatic precedent)
     'Allston Trading':                   'allston-trading',               # board confirmed, name matches exactly, 0 jobs open as of May 2026
     'Wolverine Trading':                 'wolverine',                     # board confirmed, name="Wolverine" (lower-confidence token match), 0 jobs open as of May 2026
+    'Quantbox Research':                 'quantbox',                      # board confirmed, name="QuantBox", 0 jobs open as of May 2026
 }
 
 # Per-company location filter overrides for Greenhouse.
