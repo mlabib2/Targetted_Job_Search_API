@@ -355,6 +355,12 @@ TARGET_COMPANIES = [
         'ats_platform': 'Workable',
         'notes': 'Prop trading/HFT firm — Workable token: quantbox (board returns name="QuantBox"). 0 jobs open as of May 2026; no Hong Kong office evidence found. Kept seeded for future-proofing only.'
     },
+    {
+        'name': 'Eagle Seven',
+        'career_url': 'https://apply.workable.com/eagle-seven/',
+        'ats_platform': 'Workable',
+        'notes': 'Chicago prop trading firm — Workable token: eagle-seven, board confirmed working (name matches exactly). 5 jobs open as of May 2026 (Algorithmic Trader, Energy Trader, Junior Trader, Senior Software Developer, Technology Operations Engineer) — all Chicago-based, no Hong Kong office evidence found. Kept seeded for future-proofing only.'
+    },
 ]
 
 

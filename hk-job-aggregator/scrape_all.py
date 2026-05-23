@@ -105,6 +105,7 @@ WORKABLE_TOKENS = {
     'Allston Trading':                   'allston-trading',               # board confirmed, name matches exactly, 0 jobs open as of May 2026
     'Wolverine Trading':                 'wolverine',                     # board confirmed, name="Wolverine" (lower-confidence token match), 0 jobs open as of May 2026
     'Quantbox Research':                 'quantbox',                      # board confirmed, name="QuantBox", 0 jobs open as of May 2026
+    'Eagle Seven':                       'eagle-seven',                   # board confirmed, name matches exactly, 5 jobs open (Chicago) as of May 2026 — Algorithmic Trader, Energy Trader, Junior Trader, Senior Software Developer, Technology Operations Engineer
 }
 
 # Per-company location filter overrides for Greenhouse.
