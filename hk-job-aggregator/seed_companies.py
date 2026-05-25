@@ -361,6 +361,12 @@ TARGET_COMPANIES = [
         'ats_platform': 'Workable',
         'notes': 'Chicago prop trading firm — Workable token: eagle-seven, board confirmed working (name matches exactly). 5 jobs open as of May 2026 (Algorithmic Trader, Energy Trader, Junior Trader, Senior Software Developer, Technology Operations Engineer) — all Chicago-based, no Hong Kong office evidence found. Kept seeded for future-proofing only.'
     },
+    {
+        'name': 'Maverick Derivatives',
+        'career_url': 'https://boards.greenhouse.io/maverickderivatives',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Options market maker — Greenhouse token: maverickderivatives, board confirmed working. 2 jobs open as of May 2026 (Singapore, Amsterdam), 0 HK. Kept seeded for future-proofing only.'
+    },
 ]
 
 

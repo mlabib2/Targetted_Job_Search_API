@@ -95,6 +95,7 @@ GREENHOUSE_TOKENS = {
     'Vatic Labs':                        'vaticlabs',                     # board confirmed working; 0 HK as of Jul 2026 — roles are NY/Abu Dhabi/Singapore only, no HK office evidence found, kept for future-proofing only
     # New additions — May 2026 (from personal target-company list gap-check)
     'GSA Capital':                       'gsacapital',                    # 9 jobs, all London/New York, 0 HK — incl. "Software Developer" (London). London filter applied below.
+    'Maverick Derivatives':              'maverickderivatives',           # 2 jobs (Singapore/Amsterdam), 0 HK — kept for future-proofing
 }
 
 # Workable ATS companies — public widget API, no auth required.
