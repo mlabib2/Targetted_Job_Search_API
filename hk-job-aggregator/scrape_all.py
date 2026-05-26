@@ -96,6 +96,7 @@ GREENHOUSE_TOKENS = {
     # New additions — May 2026 (from personal target-company list gap-check)
     'GSA Capital':                       'gsacapital',                    # 9 jobs, all London/New York, 0 HK — incl. "Software Developer" (London). London filter applied below.
     'Maverick Derivatives':              'maverickderivatives',           # 2 jobs (Singapore/Amsterdam), 0 HK — kept for future-proofing
+    'Geneva Trading':                    'genevatrading',                 # 11 jobs (Chicago/Dublin/London incl. "OTC Oil Desk Lead"), 0 HK — London filter applied below
 }
 
 # Workable ATS companies — public widget API, no auth required.
@@ -116,6 +117,7 @@ GREENHOUSE_LOCATION_OVERRIDES = {
     'Winton':        'London',
     'PDT Partners':  'London',
     'GSA Capital':   'London',
+    'Geneva Trading':'London',
 }
 
 LEVER_TOKENS = {
