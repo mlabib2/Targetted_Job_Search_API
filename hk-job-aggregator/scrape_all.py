@@ -97,6 +97,7 @@ GREENHOUSE_TOKENS = {
     'GSA Capital':                       'gsacapital',                    # 9 jobs, all London/New York, 0 HK — incl. "Software Developer" (London). London filter applied below.
     'Maverick Derivatives':              'maverickderivatives',           # 2 jobs (Singapore/Amsterdam), 0 HK — kept for future-proofing
     'Geneva Trading':                    'genevatrading',                 # 11 jobs (Chicago/Dublin/London incl. "OTC Oil Desk Lead"), 0 HK — London filter applied below
+    'Epoch Capital':                     'epochcapital',                  # 1 job, location listed as "All", 0 HK confirmed — kept for future-proofing
 }
 
 # Workable ATS companies — public widget API, no auth required.

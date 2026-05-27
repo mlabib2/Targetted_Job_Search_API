@@ -373,6 +373,12 @@ TARGET_COMPANIES = [
         'ats_platform': 'Greenhouse',
         'notes': 'Prop trading firm — Greenhouse token: genevatrading, board confirmed working. 11 jobs open as of May 2026 (Chicago/Dublin/London incl. "OTC Oil Desk Lead" in London), 0 HK. Scraped with London filter (GREENHOUSE_LOCATION_OVERRIDES).'
     },
+    {
+        'name': 'Epoch Capital',
+        'career_url': 'https://boards.greenhouse.io/epochcapital',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Greenhouse token: epochcapital, board confirmed working. 1 job open as of May 2026, location listed as "All", 0 HK. Kept seeded for future-proofing only.'
+    },
 ]
 
 
