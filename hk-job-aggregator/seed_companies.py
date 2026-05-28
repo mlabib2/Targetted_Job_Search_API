@@ -379,6 +379,12 @@ TARGET_COMPANIES = [
         'ats_platform': 'Greenhouse',
         'notes': 'Greenhouse token: epochcapital, board confirmed working. 1 job open as of May 2026, location listed as "All", 0 HK. Kept seeded for future-proofing only.'
     },
+    {
+        'name': 'Chicago Trading Company',
+        'career_url': 'https://boards.greenhouse.io/chicagotrading',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Prop trading firm — Greenhouse token: chicagotrading, board confirmed working. 25 jobs open as of May 2026, all Chicago/New York, 0 HK. Kept seeded for future-proofing only.'
+    },
 ]
 
 
