@@ -385,6 +385,12 @@ TARGET_COMPANIES = [
         'ats_platform': 'Greenhouse',
         'notes': 'Prop trading firm — Greenhouse token: chicagotrading, board confirmed working. 25 jobs open as of May 2026, all Chicago/New York, 0 HK. Kept seeded for future-proofing only.'
     },
+    {
+        'name': 'Belvedere Trading',
+        'career_url': 'https://jobs.lever.co/belvederetrading',
+        'ats_platform': 'Lever',
+        'notes': 'Options trading firm — Lever token: belvederetrading, board confirmed working. 16 jobs open as of May 2026 (Chicago/Singapore/New York), 0 HK. Kept seeded for future-proofing only.'
+    },
 ]
 
 
