@@ -132,6 +132,7 @@ LEVER_TOKENS = {
     'Amber Group':                       'ambergroup',                    # 2 HK jobs confirmed Jul 2026 (Blockchain Developer, Quant Researcher)
     # New additions — May 2026 (from personal target-company list gap-check)
     'Belvedere Trading':                 'belvederetrading',              # 16 jobs (Chicago/Singapore/NY), 0 HK — kept for future-proofing
+    'Valkyrie Trading':                  'valkyrietrading',               # 6 jobs (Chicago), 0 HK — kept for future-proofing
 }
 
 # Workday companies: name must match the DB 'name' column exactly (from seed_companies.py)

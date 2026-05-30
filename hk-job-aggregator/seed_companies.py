@@ -391,6 +391,12 @@ TARGET_COMPANIES = [
         'ats_platform': 'Lever',
         'notes': 'Options trading firm — Lever token: belvederetrading, board confirmed working. 16 jobs open as of May 2026 (Chicago/Singapore/New York), 0 HK. Kept seeded for future-proofing only.'
     },
+    {
+        'name': 'Valkyrie Trading',
+        'career_url': 'https://jobs.lever.co/valkyrietrading',
+        'ats_platform': 'Lever',
+        'notes': 'Prop trading firm — Lever token: valkyrietrading, board confirmed working. 6 jobs open as of May 2026, all Chicago, 0 HK. Kept seeded for future-proofing only.'
+    },
 ]
 
 
