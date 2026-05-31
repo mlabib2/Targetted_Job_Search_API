@@ -1,22 +1,22 @@
 # HK Job Aggregator
 
-Automated job monitoring for Hong Kong finance and quant roles. Scrapes job postings from 44 target companies across 8 ATS platforms, uses AI to match against your CV, and sends a daily email digest of the best fits.
+Automated job monitoring for Hong Kong finance and quant roles. Scrapes job postings from 54 target companies across 9 ATS platforms, uses AI to match against your CV, and sends a daily email digest of the best fits.
 
-_Company count last verified against `scrape_all.py` (source of truth) on 2026-07-26 — `README.md` had drifted out of date since May 2026._
+_Company count last verified against `scrape_all.py` (source of truth) on 2026-05-31._
 
 ## Pipeline
 
 ```
 GitHub Actions (daily, 5am HKT)
-  → Scrape 44 companies across 8 ATS platforms
+  → Scrape 54 companies across 9 ATS platforms
     → Store & deduplicate in Supabase (PostgreSQL)
       → AI-score new jobs against CV (Claude Haiku)
         → Email daily digest via Gmail SMTP
 ```
 
-## Companies Scraped (44 active)
+## Companies Scraped (54 active)
 
-### Greenhouse (23 companies)
+### Greenhouse (28 companies)
 | Company | Token | Typical HK Jobs |
 |---|---|---|
 | Qube Research & Technologies | `quberesearchandtechnologies` | ~24 |
@@ -39,9 +39,18 @@ GitHub Actions (daily, 5am HKT)
 | AQR Capital Management | `aqr` | ~1 (2 London) |
 | Citadel Securities | `citadelsecurities` | 0 (board active, watch) |
 | XTX Markets | `xtxmarketstechnologies` | 0 (5 total — London/NY/SG) |
+| Eclipse Trading | `eclipsetrading` | HK is HQ — 15 of 18 total |
+| Da Vinci Trading | `davinciderivatives` | ~1 (of 11 total) |
 | Marshall Wace | `marshallwace` | 0 HK (2 London, London filter) |
 | Winton | `winton` | 0 HK (8 London, London filter) |
 | PDT Partners | `pdtpartners` | 0 HK (1 London, London filter) |
+| GSA Capital | `gsacapital` | 0 HK (8 London/NY, London filter) |
+| Mako Trading | `mako` | 0 (board active, future-proofing) |
+| Vatic Labs | `vaticlabs` | 0 (board active, future-proofing) |
+| Maverick Derivatives | `maverickderivatives` | 0 (2 total — Singapore/Amsterdam, future-proofing) |
+| Geneva Trading | `genevatrading` | 0 HK (1 London — "OTC Oil Desk Lead", London filter) |
+| Epoch Capital | `epochcapital` | 0 (1 total, location "All", future-proofing) |
+| Chicago Trading Company | `chicagotrading` | 0 (25 total — Chicago/NY, future-proofing) |
 
 ### Workday (13 companies)
 | Company | Tenant / Site |
@@ -230,7 +239,7 @@ pip install -r requirements.txt
 python seed_companies.py        # register companies in Supabase
 python test_scrapers.py --fast  # sanity check before scraping
 
-python scrape_all.py            # scrape all 28 companies
+python scrape_all.py            # scrape all 54 companies
 python matcher.py               # AI-score new jobs against CV
 python emailer.py --dry-run     # preview digest (saves digest_preview.html)
 python emailer.py               # send digest email
