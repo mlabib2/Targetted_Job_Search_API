@@ -79,10 +79,14 @@ GitHub Actions (daily, 5am HKT)
 | HSBC | Eightfold API | `hsbc.eightfold.ai` — ~233 HK jobs |
 | Schroders | Oracle HCM REST API | `ekbq.fa.em2.oraclecloud.com` — scraped with London filter, 2 HK |
 
-### Workable (1 company)
+### Workable (5 companies)
 | Company | Account | Notes |
 |---|---|---|
 | Capula Investment Management | `capula-investment-management-ltd` | Public widget API, titles/locations only (no description endpoint) — 1 HK role as of Jul 2026 |
+| Allston Trading | `allston-trading` | 0 jobs open, Chicago prop shop, kept for future-proofing |
+| Wolverine Trading | `wolverine` | 0 jobs open, Chicago prop shop, kept for future-proofing |
+| Quantbox Research | `quantbox` | 0 jobs open, kept for future-proofing |
+| Eagle Seven | `eagle-seven` | 5 jobs open (all Chicago), kept for future-proofing |
 
 ### Custom — Framer site (1 company)
 | Company | Method | Notes |
