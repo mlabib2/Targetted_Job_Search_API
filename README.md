@@ -88,6 +88,13 @@ GitHub Actions (daily, 5am HKT)
 | Quantbox Research | `quantbox` | 0 jobs open, kept for future-proofing |
 | Eagle Seven | `eagle-seven` | 5 jobs open (all Chicago), kept for future-proofing |
 
+### Lever (3 companies)
+| Company | Token | Typical HK Jobs |
+|---|---|---|
+| Amber Group | `ambergroup` | ~2 (Blockchain Developer, Quant Researcher) |
+| Belvedere Trading | `belvederetrading` | 0 (16 total — Chicago/Singapore/NY, future-proofing) |
+| Valkyrie Trading | `valkyrietrading` | 0 (6 total — Chicago, future-proofing) |
+
 ### Custom — Framer site (1 company)
 | Company | Method | Notes |
 |---|---|---|
@@ -217,7 +224,7 @@ hk-job-aggregator/
 │   ├── schroders_scraper.py           # Schroders — Oracle HCM REST
 │   ├── workable_scraper.py            # Capula — Workable widget API
 │   ├── arrowpoint_scraper.py          # Arrowpoint — custom Framer site scrape
-│   └── lever_scraper.py               # Lever (built, no active tokens)
+│   └── lever_scraper.py               # Lever ATS (3 companies)
 ├── models/
 │   ├── db.py                          # Supabase (PostgreSQL) interface
 │   └── schema.sql                     # PostgreSQL schema
