@@ -102,54 +102,70 @@ GitHub Actions (daily, 5am HKT)
 
 ## Personal Target List Coverage
 
-Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_Funds.csv`, maintained outside this repo). Last checked: **2026-07-26**.
+Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_Funds.csv`, maintained outside this repo). Last checked: **2026-06-03**.
 
 | Status | Count |
 |---|---|
-| ✅ Tracked (actively scraped) | 33 |
-| ✗ Confirmed dead end (no usable public API / no HK office) | 17 |
-| ? Not yet researched | 31 |
+| ✅ Tracked (actively scraped) | 49 |
+| ✗ Confirmed dead end (no usable public API / no HK office) | 16 |
+| ? Not yet researched | 16 |
 | **Total target firms** | **81** |
 
-### ✅ Tracked — actively scraped (33)
+### ✅ Tracked — actively scraped (49)
 
 | Target list name | Platform |
 |---|---|
+| Allston Trading | Workable |
+| Amber Group | Lever |
 | AQR Capital Management | Greenhouse |
 | Arrowpoint Investment Partners (HK) → *Arrowpoint Investment Partners* | Custom (Framer) |
 | Barclays → *Barclays Hong Kong* | Workday |
+| Belvedere Trading | Lever |
 | BlackRock (Aladdin / SAE) → *BlackRock* | Workday |
 | Capula Investment Management | Workable |
+| Chicago Trading Company | Greenhouse |
 | Citadel Securities | Greenhouse |
 | Citigroup → *Citi* | Workday |
-| DRW | Greenhouse |
+| Da Vinci Trading | Greenhouse |
 | Deutsche Bank | Workday |
+| DRW | Greenhouse |
+| Eagle Seven | Workable |
+| Eclipse Trading | Greenhouse |
+| Epoch Capital | Greenhouse |
 | Flow Traders | Greenhouse |
+| Geneva Trading | Greenhouse (London filter) |
 | Goldman Sachs → *Goldman Sachs Hong Kong* | Custom GraphQL |
+| GSA Capital | Greenhouse (London filter) |
 | HSBC → *HSBC Hong Kong* | Eightfold |
 | Hudson River Trading | Greenhouse |
 | IMC Trading | Greenhouse |
 | Interactive Brokers (IBKR) → *Interactive Brokers* | Greenhouse |
-| JPMorgan → *JPMorgan Chase Hong Kong* | Oracle HCM |
 | Jane Street | Greenhouse |
+| JPMorgan → *JPMorgan Chase Hong Kong* | Oracle HCM |
 | Jump Trading | Greenhouse |
+| Mako Trading | Greenhouse |
 | Man Group (AHL) → *Man Group* | Greenhouse |
 | Marshall Wace | Greenhouse |
+| Maverick Derivatives | Greenhouse |
 | Millennium Management | Eightfold |
 | Morgan Stanley → *Morgan Stanley Hong Kong* | Workday |
 | Optiver | Greenhouse |
 | Point72 / Cubist → *Point72* | Greenhouse |
+| Quantbox Research | Workable |
 | Qube Research (QRT) → *Qube Research & Technologies* | Greenhouse |
 | Schonfeld | Greenhouse |
 | Squarepoint Capital | Greenhouse |
 | Standard Chartered → *Standard Chartered Hong Kong* | J2W sitemap |
 | Tower Research Capital | Greenhouse |
+| Valkyrie Trading | Lever |
+| Vatic Labs | Greenhouse |
 | Virtu Financial | Greenhouse |
 | Winton Group → *Winton* | Greenhouse |
+| Wolverine Trading | Workable |
 | WorldQuant | Greenhouse |
 | XTX Markets | Greenhouse |
 
-### ✗ Confirmed dead end — don't re-research (17)
+### ✗ Confirmed dead end — don't re-research (16)
 
 | Firm | Reason |
 |---|---|
@@ -158,7 +174,6 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | DE Shaw | Workday `deshaw.wd1` — 401, auth required (private board) |
 | Two Sigma | Custom site (`careers.twosigma.com`) — no public API, 0 HK jobs in practice |
 | Teza Technologies | Confirmed no Hong Kong office (US-only) |
-| GSA Capital | Greenhouse `gsacapital` — 10 jobs, all London/NY, 0 HK (rechecked Jul 2026) |
 | Balyasny | Workday `bamfunds.wd1` — 401, auth required (private board) |
 | Five Rings Capital | Confirmed no Hong Kong office (US-only) |
 | Akuna Capital | Greenhouse `akunacapital` — 0 HK jobs (Chicago/Sydney/Singapore only) |
@@ -171,41 +186,26 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | Bridgewater Associates | Lever 404; near-zero HK presence (client relations only) |
 | Bloomberg | Workday tenant unclear — found Bloomberg Industry Group's (different affiliate), not LP/Terminal's; needs manual URL discovery |
 
-### ? Not tracked — never researched (31)
+### ? Not tracked — never researched (16)
 
-Mostly small Chicago-based prop shops with unconfirmed Hong Kong presence. Deprioritized to avoid burning research time on long-shot firms — revisit if one becomes specifically relevant.
+Mostly small Chicago-based prop shops with unconfirmed Hong Kong presence, or generic-word firm names where no live ATS board was found. Deprioritized to avoid burning research time on long-shot firms — revisit if one becomes specifically relevant.
 
 | Firm | HK presence (per target list) |
 |---|---|
-| Amber Group | Yes |
-| Mako Trading | Yes |
 | All Options | Likely |
-| Vatic Labs | Likely |
 | Deep Blue Capital | Yes |
-| Allston Trading | Likely |
-| Da Vinci Trading | Likely |
 | Chimera Securities | Yes |
 | Matrix Executions | Likely |
-| Eclipse Trading | Likely |
 | Algorithmic Trading Grp | Uncertain |
-| Maverick Derivatives | Likely |
-| Wolverine Trading | Likely |
-| Belvedere Trading | Likely |
-| Geneva Trading | Uncertain |
-| Epoch Capital | Uncertain |
-| Eagle Seven | Uncertain |
 | Grace Hall Trading | Uncertain |
 | Market Wizards | Uncertain |
 | Prime Trading | Uncertain |
-| Quantbox Research | Uncertain |
 | Seven Points Capital | Uncertain |
-| Valkyrie Trading | Uncertain |
 | League Trading | Uncertain |
 | Marquette Partners | Uncertain |
 | Barak Capital | Uncertain |
 | Domstad Traders | Uncertain |
 | Genk Capital | Uncertain |
-| Chicago Trading Company | Uncertain |
 | Liquid Capital Group | Uncertain |
 | Z.R.T.X. | Uncertain |
 
