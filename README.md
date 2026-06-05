@@ -107,8 +107,8 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | Status | Count |
 |---|---|
 | ✅ Tracked (actively scraped) | 49 |
-| ✗ Confirmed dead end (no usable public API / no HK office) | 17 |
-| ? Not yet researched | 15 |
+| ✗ Confirmed dead end (no usable public API / no HK office) | 18 |
+| ? Not yet researched | 14 |
 | **Total target firms** | **81** |
 
 ### ✅ Tracked — actively scraped (49)
@@ -165,7 +165,7 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | WorldQuant | Greenhouse |
 | XTX Markets | Greenhouse |
 
-### ✗ Confirmed dead end — don't re-research (17)
+### ✗ Confirmed dead end — don't re-research (18)
 
 | Firm | Reason |
 |---|---|
@@ -186,8 +186,9 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | Bridgewater Associates | Lever 404; near-zero HK presence (client relations only) |
 | Bloomberg | Workday tenant unclear — found Bloomberg Industry Group's (different affiliate), not LP/Terminal's; needs manual URL discovery |
 | Chimera Securities | Workable `chimera-securities-llc` confirmed real — but NYC-only, 1 entry-level equity trader role, no HK/Asia office (checked Jun 2026) |
+| Algorithmic Trading Grp | Live site (algorithmictradinggroup.com) is a barebones placeholder ("Welcome to ATG") — `/careers` 404s, no actual recruiting infrastructure despite third-party listings claiming an HK/Amsterdam HQ (checked Jun 2026) |
 
-### ? Not tracked — never researched (15)
+### ? Not tracked — never researched (14)
 
 Mostly small Chicago-based prop shops with unconfirmed Hong Kong presence, or generic-word firm names where no live ATS board was found. Deprioritized to avoid burning research time on long-shot firms — revisit if one becomes specifically relevant.
 
@@ -196,7 +197,6 @@ Mostly small Chicago-based prop shops with unconfirmed Hong Kong presence, or ge
 | All Options | Likely |
 | Deep Blue Capital | Yes |
 | Matrix Executions | Likely |
-| Algorithmic Trading Grp | Uncertain |
 | Grace Hall Trading | Uncertain |
 | Market Wizards | Uncertain |
 | Prime Trading | Uncertain |
