@@ -107,8 +107,8 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | Status | Count |
 |---|---|
 | ✅ Tracked (actively scraped) | 49 |
-| ✗ Confirmed dead end (no usable public API / no HK office) | 19 |
-| ? Not yet researched | 13 |
+| ✗ Confirmed dead end (no usable public API / no HK office) | 20 |
+| ? Not yet researched | 12 |
 | **Total target firms** | **81** |
 
 ### ✅ Tracked — actively scraped (49)
@@ -165,7 +165,7 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | WorldQuant | Greenhouse |
 | XTX Markets | Greenhouse |
 
-### ✗ Confirmed dead end — don't re-research (19)
+### ✗ Confirmed dead end — don't re-research (20)
 
 | Firm | Reason |
 |---|---|
@@ -188,8 +188,9 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | Chimera Securities | Workable `chimera-securities-llc` confirmed real — but NYC-only, 1 entry-level equity trader role, no HK/Asia office (checked Jun 2026) |
 | Algorithmic Trading Grp | Live site (algorithmictradinggroup.com) is a barebones placeholder ("Welcome to ATG") — `/careers` 404s, no actual recruiting infrastructure despite third-party listings claiming an HK/Amsterdam HQ (checked Jun 2026) |
 | Marquette Partners | Chicago-only prop shop; careers page is email-only (`info@mqpllc.com`), no ATS/API of any kind (checked Jun 2026) |
+| Domstad Traders | Utrecht, Netherlands prop shop (part of "Accent Groupe"); no HK/Asia presence found (checked Jun 2026) |
 
-### ? Not tracked — never researched (13)
+### ? Not tracked — never researched (12)
 
 Mostly small Chicago-based prop shops with unconfirmed Hong Kong presence, or generic-word firm names where no live ATS board was found. Deprioritized to avoid burning research time on long-shot firms — revisit if one becomes specifically relevant.
 
@@ -204,7 +205,6 @@ Mostly small Chicago-based prop shops with unconfirmed Hong Kong presence, or ge
 | Seven Points Capital | Uncertain |
 | League Trading | Uncertain |
 | Barak Capital | Uncertain |
-| Domstad Traders | Uncertain |
 | Genk Capital | Uncertain |
 | Liquid Capital Group | Uncertain |
 | Z.R.T.X. | Uncertain |
