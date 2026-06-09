@@ -107,8 +107,8 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | Status | Count |
 |---|---|
 | ✅ Tracked (actively scraped) | 49 |
-| ✗ Confirmed dead end (no usable public API / no HK office) | 20 |
-| ? Not yet researched | 12 |
+| ✗ Confirmed dead end (no usable public API / no HK office) | 21 |
+| ? Not yet researched | 11 |
 | **Total target firms** | **81** |
 
 ### ✅ Tracked — actively scraped (49)
@@ -165,7 +165,7 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | WorldQuant | Greenhouse |
 | XTX Markets | Greenhouse |
 
-### ✗ Confirmed dead end — don't re-research (20)
+### ✗ Confirmed dead end — don't re-research (21)
 
 | Firm | Reason |
 |---|---|
@@ -189,8 +189,9 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | Algorithmic Trading Grp | Live site (algorithmictradinggroup.com) is a barebones placeholder ("Welcome to ATG") — `/careers` 404s, no actual recruiting infrastructure despite third-party listings claiming an HK/Amsterdam HQ (checked Jun 2026) |
 | Marquette Partners | Chicago-only prop shop; careers page is email-only (`info@mqpllc.com`), no ATS/API of any kind (checked Jun 2026) |
 | Domstad Traders | Utrecht, Netherlands prop shop (part of "Accent Groupe"); no HK/Asia presence found (checked Jun 2026) |
+| Genk Capital | Singapore-only, explicitly "onsite" positions; email-only application (no ATS); also outside current HK/London/US-sponsorship geographic scope (checked Jun 2026) |
 
-### ? Not tracked — never researched (12)
+### ? Not tracked — never researched (11)
 
 Mostly small Chicago-based prop shops with unconfirmed Hong Kong presence, or generic-word firm names where no live ATS board was found. Deprioritized to avoid burning research time on long-shot firms — revisit if one becomes specifically relevant.
 
@@ -205,7 +206,6 @@ Mostly small Chicago-based prop shops with unconfirmed Hong Kong presence, or ge
 | Seven Points Capital | Uncertain |
 | League Trading | Uncertain |
 | Barak Capital | Uncertain |
-| Genk Capital | Uncertain |
 | Liquid Capital Group | Uncertain |
 | Z.R.T.X. | Uncertain |
 
