@@ -107,8 +107,8 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | Status | Count |
 |---|---|
 | ✅ Tracked (actively scraped) | 49 |
-| ✗ Confirmed dead end (no usable public API / no HK office) | 22 |
-| ? Not yet researched | 10 |
+| ✗ Confirmed dead end (no usable public API / no HK office) | 23 |
+| ? Not yet researched | 9 |
 | **Total target firms** | **81** |
 
 ### ✅ Tracked — actively scraped (49)
@@ -165,7 +165,7 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | WorldQuant | Greenhouse |
 | XTX Markets | Greenhouse |
 
-### ✗ Confirmed dead end — don't re-research (22)
+### ✗ Confirmed dead end — don't re-research (23)
 
 | Firm | Reason |
 |---|---|
@@ -191,8 +191,9 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | Domstad Traders | Utrecht, Netherlands prop shop (part of "Accent Groupe"); no HK/Asia presence found (checked Jun 2026) |
 | Genk Capital | Singapore-only, explicitly "onsite" positions; email-only application (no ATS); also outside current HK/London/US-sponsorship geographic scope (checked Jun 2026) |
 | All Options | Amsterdam + Austin TX only; careers page uses a WordPress→BambooHR plugin embed, not a public API; no HK/Asia presence (checked Jun 2026) |
+| Z.R.T.X. | Identified as Z.R.T.X. Trading Ltd, a Cyprus (Larnaca)-based prop firm under "Accent Groupe" — unrelated to HK job search, no scrapeable API needed (checked Jun 2026) |
 
-### ? Not tracked — never researched (10)
+### ? Not tracked — never researched (9)
 
 Mostly small Chicago-based prop shops with unconfirmed Hong Kong presence, or generic-word firm names where no live ATS board was found. Deprioritized to avoid burning research time on long-shot firms — revisit if one becomes specifically relevant.
 
@@ -207,7 +208,6 @@ Mostly small Chicago-based prop shops with unconfirmed Hong Kong presence, or ge
 | League Trading | Uncertain |
 | Barak Capital | Uncertain |
 | Liquid Capital Group | Uncertain |
-| Z.R.T.X. | Uncertain |
 
 ## Project Structure
 
