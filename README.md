@@ -107,8 +107,8 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | Status | Count |
 |---|---|
 | ✅ Tracked (actively scraped) | 49 |
-| ✗ Confirmed dead end (no usable public API / no HK office) | 23 |
-| ? Not yet researched | 9 |
+| ✗ Confirmed dead end (no usable public API / no HK office) | 24 |
+| ? Not yet researched | 8 |
 | **Total target firms** | **81** |
 
 ### ✅ Tracked — actively scraped (49)
@@ -165,7 +165,7 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | WorldQuant | Greenhouse |
 | XTX Markets | Greenhouse |
 
-### ✗ Confirmed dead end — don't re-research (23)
+### ✗ Confirmed dead end — don't re-research (24)
 
 | Firm | Reason |
 |---|---|
@@ -192,14 +192,14 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | Genk Capital | Singapore-only, explicitly "onsite" positions; email-only application (no ATS); also outside current HK/London/US-sponsorship geographic scope (checked Jun 2026) |
 | All Options | Amsterdam + Austin TX only; careers page uses a WordPress→BambooHR plugin embed, not a public API; no HK/Asia presence (checked Jun 2026) |
 | Z.R.T.X. | Identified as Z.R.T.X. Trading Ltd, a Cyprus (Larnaca)-based prop firm under "Accent Groupe" — unrelated to HK job search, no scrapeable API needed (checked Jun 2026) |
+| Deep Blue Capital | Real Amsterdam-HQ stat-arb firm with a small confirmed HK office (Deep Blue Capital (HK) Limited, ~3 staff) — but `deepbluecap.com/vacancies` lists zero openings and is email-only (`recruitment@deepbluecap.com`), no ATS/API of any kind (confirmed via live browser render, checked Jun 2026) |
 
-### ? Not tracked — never researched (9)
+### ? Not tracked — never researched (8)
 
 Mostly small Chicago-based prop shops with unconfirmed Hong Kong presence, or generic-word firm names where no live ATS board was found. Deprioritized to avoid burning research time on long-shot firms — revisit if one becomes specifically relevant.
 
 | Firm | HK presence (per target list) |
 |---|---|
-| Deep Blue Capital | Yes |
 | Matrix Executions | Likely |
 | Grace Hall Trading | Uncertain |
 | Market Wizards | Uncertain |
