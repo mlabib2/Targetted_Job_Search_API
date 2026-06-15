@@ -107,8 +107,8 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | Status | Count |
 |---|---|
 | ✅ Tracked (actively scraped) | 49 |
-| ✗ Confirmed dead end (no usable public API / no HK office) | 25 |
-| ? Not yet researched | 7 |
+| ✗ Confirmed dead end (no usable public API / no HK office) | 27 |
+| ? Not yet researched | 5 |
 | **Total target firms** | **81** |
 
 ### ✅ Tracked — actively scraped (49)
@@ -165,7 +165,7 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | WorldQuant | Greenhouse |
 | XTX Markets | Greenhouse |
 
-### ✗ Confirmed dead end — don't re-research (25)
+### ✗ Confirmed dead end — don't re-research (27)
 
 | Firm | Reason |
 |---|---|
@@ -194,15 +194,15 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | Z.R.T.X. | Identified as Z.R.T.X. Trading Ltd, a Cyprus (Larnaca)-based prop firm under "Accent Groupe" — unrelated to HK job search, no scrapeable API needed (checked Jun 2026) |
 | Deep Blue Capital | Real Amsterdam-HQ stat-arb firm with a small confirmed HK office (Deep Blue Capital (HK) Limited, ~3 staff) — but `deepbluecap.com/vacancies` lists zero openings and is email-only (`recruitment@deepbluecap.com`), no ATS/API of any kind (confirmed via live browser render, checked Jun 2026) |
 | Matrix Executions | Chicago/NY-only agency options broker (FINRA BrokerCheck #38455) — team page lists only Chicago/NY staff, no Hong Kong or APAC office found ("Matrix Asia Pacific" is an unrelated solar/sourcing company, not this firm); careers page is email-only (`careers@matrixexecutions.com`), no ATS (checked Jun 2026) |
+| Grace Hall Trading | Chicago + Charlotte NC prop firm (part of Simplex Investments) — no Hong Kong presence found anywhere; `gracehall.com` is an unclaimed/disconnected Wix domain with no live site at all (confirmed via live browser render, checked Jun 2026) |
+| Market Wizards | Amsterdam-based prop trading/partnership firm — no Hong Kong presence found; careers page lists zero open positions, contact form only, no ATS (confirmed via live browser render, checked Jun 2026) |
 
-### ? Not tracked — never researched (7)
+### ? Not tracked — never researched (5)
 
 Mostly small Chicago-based prop shops with unconfirmed Hong Kong presence, or generic-word firm names where no live ATS board was found. Deprioritized to avoid burning research time on long-shot firms — revisit if one becomes specifically relevant.
 
 | Firm | HK presence (per target list) |
 |---|---|
-| Grace Hall Trading | Uncertain |
-| Market Wizards | Uncertain |
 | Prime Trading | Uncertain |
 | Seven Points Capital | Uncertain |
 | League Trading | Uncertain |
