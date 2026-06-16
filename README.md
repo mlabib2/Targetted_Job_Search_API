@@ -107,8 +107,8 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | Status | Count |
 |---|---|
 | ✅ Tracked (actively scraped) | 49 |
-| ✗ Confirmed dead end (no usable public API / no HK office) | 27 |
-| ? Not yet researched | 5 |
+| ✗ Confirmed dead end (no usable public API / no HK office) | 29 |
+| ? Not yet researched | 3 |
 | **Total target firms** | **81** |
 
 ### ✅ Tracked — actively scraped (49)
@@ -165,7 +165,7 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | WorldQuant | Greenhouse |
 | XTX Markets | Greenhouse |
 
-### ✗ Confirmed dead end — don't re-research (27)
+### ✗ Confirmed dead end — don't re-research (29)
 
 | Firm | Reason |
 |---|---|
@@ -196,15 +196,15 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | Matrix Executions | Chicago/NY-only agency options broker (FINRA BrokerCheck #38455) — team page lists only Chicago/NY staff, no Hong Kong or APAC office found ("Matrix Asia Pacific" is an unrelated solar/sourcing company, not this firm); careers page is email-only (`careers@matrixexecutions.com`), no ATS (checked Jun 2026) |
 | Grace Hall Trading | Chicago + Charlotte NC prop firm (part of Simplex Investments) — no Hong Kong presence found anywhere; `gracehall.com` is an unclaimed/disconnected Wix domain with no live site at all (confirmed via live browser render, checked Jun 2026) |
 | Market Wizards | Amsterdam-based prop trading/partnership firm — no Hong Kong presence found; careers page lists zero open positions, contact form only, no ATS (confirmed via live browser render, checked Jun 2026) |
+| Prime Trading | Chicago/NY prop trading firm (member CME/NYMEX/CBOT/COMEX/ICE/Eurex since 1987) — no confirmed Hong Kong office (only generic "global ties to Asia" marketing copy, no actual office found); "Join Us" page is a plain contact form, not an ATS. Note: an unrelated, similarly-named "Prime Trading Global" is on the HK SFC's unlicensed-entity alert list — a different, unlicensed outfit, not this firm (checked Jun 2026) |
+| Seven Points Capital | NYC-based prop firm with offices in NJ/FL/Toronto, expanded to London Jan 2026 — no Hong Kong/Asia presence found anywhere; uses Pinpoint ATS (not a supported platform in this repo), moot given geography (checked Jun 2026) |
 
-### ? Not tracked — never researched (5)
+### ? Not tracked — never researched (3)
 
 Mostly small Chicago-based prop shops with unconfirmed Hong Kong presence, or generic-word firm names where no live ATS board was found. Deprioritized to avoid burning research time on long-shot firms — revisit if one becomes specifically relevant.
 
 | Firm | HK presence (per target list) |
 |---|---|
-| Prime Trading | Uncertain |
-| Seven Points Capital | Uncertain |
 | League Trading | Uncertain |
 | Barak Capital | Uncertain |
 | Liquid Capital Group | Uncertain |
