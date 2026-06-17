@@ -107,8 +107,8 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | Status | Count |
 |---|---|
 | ✅ Tracked (actively scraped) | 49 |
-| ✗ Confirmed dead end (no usable public API / no HK office) | 29 |
-| ? Not yet researched | 3 |
+| ✗ Confirmed dead end (no usable public API / no HK office) | 31 |
+| ? Not yet researched | 1 |
 | **Total target firms** | **81** |
 
 ### ✅ Tracked — actively scraped (49)
@@ -165,7 +165,7 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | WorldQuant | Greenhouse |
 | XTX Markets | Greenhouse |
 
-### ✗ Confirmed dead end — don't re-research (29)
+### ✗ Confirmed dead end — don't re-research (31)
 
 | Firm | Reason |
 |---|---|
@@ -198,15 +198,15 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | Market Wizards | Amsterdam-based prop trading/partnership firm — no Hong Kong presence found; careers page lists zero open positions, contact form only, no ATS (confirmed via live browser render, checked Jun 2026) |
 | Prime Trading | Chicago/NY prop trading firm (member CME/NYMEX/CBOT/COMEX/ICE/Eurex since 1987) — no confirmed Hong Kong office (only generic "global ties to Asia" marketing copy, no actual office found); "Join Us" page is a plain contact form, not an ATS. Note: an unrelated, similarly-named "Prime Trading Global" is on the HK SFC's unlicensed-entity alert list — a different, unlicensed outfit, not this firm (checked Jun 2026) |
 | Seven Points Capital | NYC-based prop firm with offices in NJ/FL/Toronto, expanded to London Jan 2026 — no Hong Kong/Asia presence found anywhere; uses Pinpoint ATS (not a supported platform in this repo), moot given geography (checked Jun 2026) |
+| League Trading | Austin, TX-based futures/options clearing & prop firm since 1986 (`theleaguecorp.com`) — single-office, no Hong Kong/Asia presence anywhere on site; "Opportunities" page is static text with no application mechanism at all, no ATS (confirmed via live browser render, checked Jun 2026) |
+| Barak Capital | Amsterdam + Tel Aviv only — live careers page (`barakmarketmaking.com/careers`) lists 8 open roles, all in those two cities, no Hong Kong/Asia office; uses non-standard ATS (Numbr Shire / forms.app), not a supported platform anyway (checked Jun 2026) |
 
-### ? Not tracked — never researched (3)
+### ? Not tracked — never researched (1)
 
 Mostly small Chicago-based prop shops with unconfirmed Hong Kong presence, or generic-word firm names where no live ATS board was found. Deprioritized to avoid burning research time on long-shot firms — revisit if one becomes specifically relevant.
 
 | Firm | HK presence (per target list) |
 |---|---|
-| League Trading | Uncertain |
-| Barak Capital | Uncertain |
 | Liquid Capital Group | Uncertain |
 
 ## Project Structure
