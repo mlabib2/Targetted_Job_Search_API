@@ -107,8 +107,8 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | Status | Count |
 |---|---|
 | ✅ Tracked (actively scraped) | 49 |
-| ✗ Confirmed dead end (no usable public API / no HK office) | 31 |
-| ? Not yet researched | 1 |
+| ✗ Confirmed dead end (no usable public API / no HK office) | 32 |
+| ? Not yet researched | 0 |
 | **Total target firms** | **81** |
 
 ### ✅ Tracked — actively scraped (49)
@@ -165,7 +165,7 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | WorldQuant | Greenhouse |
 | XTX Markets | Greenhouse |
 
-### ✗ Confirmed dead end — don't re-research (31)
+### ✗ Confirmed dead end — don't re-research (32)
 
 | Firm | Reason |
 |---|---|
@@ -200,14 +200,13 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | Seven Points Capital | NYC-based prop firm with offices in NJ/FL/Toronto, expanded to London Jan 2026 — no Hong Kong/Asia presence found anywhere; uses Pinpoint ATS (not a supported platform in this repo), moot given geography (checked Jun 2026) |
 | League Trading | Austin, TX-based futures/options clearing & prop firm since 1986 (`theleaguecorp.com`) — single-office, no Hong Kong/Asia presence anywhere on site; "Opportunities" page is static text with no application mechanism at all, no ATS (confirmed via live browser render, checked Jun 2026) |
 | Barak Capital | Amsterdam + Tel Aviv only — live careers page (`barakmarketmaking.com/careers`) lists 8 open roles, all in those two cities, no Hong Kong/Asia office; uses non-standard ATS (Numbr Shire / forms.app), not a supported platform anyway (checked Jun 2026) |
+| Liquid Capital Group | Real derivatives market maker with a genuine HK legal entity (Liquid Capital Markets Hong Kong Limited — confirmed via LinkedIn/Hedgeweek/IPC press coverage) — but `liquidcapital.com` is currently unreachable (DNS resolves to nameservers with no A record; confirmed down via live browser render too), so there's no live careers page/ATS to scrape. Even cached page content showed zero vacancies and email-only application (`careers@liquidcapital.com`). Worth revisiting if the site comes back online (checked Jun 2026) |
 
-### ? Not tracked — never researched (1)
+### ? Not tracked — never researched (0)
 
-Mostly small Chicago-based prop shops with unconfirmed Hong Kong presence, or generic-word firm names where no live ATS board was found. Deprioritized to avoid burning research time on long-shot firms — revisit if one becomes specifically relevant.
+All 81 target-list firms have now been resolved (tracked or confirmed dead end) as of Jun 2026. If new firms are ever added to the personal target list, they'd land here first.
 
-| Firm | HK presence (per target list) |
-|---|---|
-| Liquid Capital Group | Uncertain |
+**Note (Jun 2026):** the generic single-word ATS-token guesses (`matrix`, `eagle`, `grace`, `market`, `prime`, `seven`, `deep`/`deepblue`, `league`, `barak`, `liquid`) all returned HTTP 200 on Workable/Ashby, but every one was verified to be an unrelated company that happens to share the slug (e.g. `ashbyhq.com/.../eagle` is an unrelated AI startup posting "Forward Deployed Engineer" roles, not Eagle Seven; `workable.com/.../liquid` is an unrelated AI startup posting "Member of Technical Staff" roles, not Liquid Capital Group). Don't treat a bare HTTP 200 on a generic token as a match — always confirm the returned company name/job content first.
 
 ## Project Structure
 
