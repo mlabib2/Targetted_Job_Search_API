@@ -208,6 +208,17 @@ All 81 target-list firms have now been resolved (tracked or confirmed dead end) 
 
 **Note (Jun 2026):** the generic single-word ATS-token guesses (`matrix`, `eagle`, `grace`, `market`, `prime`, `seven`, `deep`/`deepblue`, `league`, `barak`, `liquid`) all returned HTTP 200 on Workable/Ashby, but every one was verified to be an unrelated company that happens to share the slug (e.g. `ashbyhq.com/.../eagle` is an unrelated AI startup posting "Forward Deployed Engineer" roles, not Eagle Seven; `workable.com/.../liquid` is an unrelated AI startup posting "Member of Technical Staff" roles, not Liquid Capital Group). Don't treat a bare HTTP 200 on a generic token as a match — always confirm the returned company name/job content first.
 
+## Other Job Portals Considered
+
+Per the user's suggestion, Indeed and Glassdoor were evaluated as additional scraping sources (Jun 2026). Neither is feasible:
+
+| Portal | Finding |
+|---|---|
+| Indeed | Publisher API (the old public job-search API) was retired in 2022/2023 and never replaced with a self-serve equivalent — no API keys have been issued since. What remains (`partners.indeed.com`) is partner-gated and one-directional (Indeed Apply / Sponsored Jobs, for *pushing* postings into Indeed, not pulling search results out), requiring a signed developer agreement and Indeed's discretionary approval — not viable for a personal project. Direct scraping is also not a fallback: as of mid-2026 Indeed sits behind Cloudflare + a custom bot-challenge layer that returns HTTP 403 on effectively all automated requests, including plain page loads, regardless of proxy/JS-rendering setup. |
+| Glassdoor | Public developer API was shut down in 2022; now (same corporate parent, Recruit Holdings, as Indeed) offered only via enterprise partnership with undisclosed pricing — no self-serve access exists in 2026. |
+
+Third-party paid aggregator APIs (e.g. TheirStack, OpenWeb Ninja, Mantiks) do re-package Indeed/Glassdoor data, but these are commercial scraping-as-a-service subscriptions, not public APIs — inconsistent with this project's ~$1–3/month cost profile and the direct-official-API pattern used for every other source here. Not recommended unless the cost/ToS tradeoff changes.
+
 ## Project Structure
 
 ```
