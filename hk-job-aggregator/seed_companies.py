@@ -20,9 +20,9 @@ TARGET_COMPANIES = [
     },
     {
         'name': 'HSBC Hong Kong',
-        'career_url': 'https://mycareer.hsbc.com/',
-        'ats_platform': 'Custom',
-        'notes': 'Custom ATS at mycareer.hsbc.com — no standard API, not scrapeable'
+        'career_url': 'https://hsbc.eightfold.ai/careers',
+        'ats_platform': 'Eightfold',
+        'notes': 'Eightfold public API at hsbc.eightfold.ai/api/apply/v2/jobs?domain=hsbc.com — 233 HK, 99 London jobs confirmed June 2026. Scraper: hsbc_scraper.py.'
     },
     {
         'name': 'Citadel Securities',
@@ -237,6 +237,49 @@ TARGET_COMPANIES = [
         'career_url': 'https://brevanhoward.wd3.myworkdayjobs.com/BH_ExternalCareers',
         'ats_platform': 'Workday',
         'notes': 'Global macro hedge fund, HK office — tenant: brevanhoward, wd3, site: BH_ExternalCareers. Confirmed 200 OK May 2026.'
+    },
+    # New additions — June 2026
+    {
+        'name': 'AQR Capital Management',
+        'career_url': 'https://boards.greenhouse.io/aqr',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Quant asset manager (Cliff Asness), Greenwich CT HQ, HK + London offices — Greenhouse token: aqr. 1 HK, 2 London confirmed June 2026.'
+    },
+    {
+        'name': 'Marshall Wace',
+        'career_url': 'https://boards.greenhouse.io/marshallwace',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Major London hedge fund (multi-strat + quant), HQ in London — Greenhouse token: marshallwace. Scraped with London filter. 2 London jobs confirmed June 2026.'
+    },
+    {
+        'name': 'Winton',
+        'career_url': 'https://boards.greenhouse.io/winton',
+        'ats_platform': 'Greenhouse',
+        'notes': 'London-based quant hedge fund — Greenhouse token: winton. Scraped with London filter. 8 London jobs confirmed June 2026.'
+    },
+    {
+        'name': 'PDT Partners',
+        'career_url': 'https://boards.greenhouse.io/pdtpartners',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Quant fund spun out of Morgan Stanley, NY + London offices — Greenhouse token: pdtpartners. Scraped with London filter. 1 London job confirmed June 2026.'
+    },
+    {
+        'name': 'Citi',
+        'career_url': 'https://citi.wd5.myworkdayjobs.com/2',
+        'ats_platform': 'Workday',
+        'notes': 'Citigroup investment bank, major HK + London presence — tenant: citi, wd5, site: 2. HK jobs confirmed June 2026.'
+    },
+    {
+        'name': 'Capital Group',
+        'career_url': 'https://capgroup.wd1.myworkdayjobs.com/capitalgroupcareers',
+        'ats_platform': 'Workday',
+        'notes': 'Major US asset manager, HK + London offices — tenant: capgroup, wd1, site: capitalgroupcareers. 2 HK, 11 London confirmed June 2026.'
+    },
+    {
+        'name': 'Schroders',
+        'career_url': 'https://ekbq.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2/jobs',
+        'ats_platform': 'Oracle HCM',
+        'notes': 'Major UK asset manager, London HQ — Oracle HCM at ekbq.fa.em2.oraclecloud.com, site: CX_2. Scraped with London filter. 44 London, 2 HK confirmed June 2026. Scraper: schroders_scraper.py.'
     },
 ]
 

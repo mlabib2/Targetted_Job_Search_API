@@ -22,6 +22,8 @@ from scrapers.goldman_scraper import GoldmanScraper
 from scrapers.jpmorgan_scraper import JPMorganScraper
 from scrapers.standard_chartered_scraper import StandardCharteredScraper
 from scrapers.millennium_scraper import MillenniumScraper
+from scrapers.hsbc_scraper import HSBCScraper
+from scrapers.schroders_scraper import SchrodersScraper
 from models.db import get_db
 
 # GitHub Actions log helpers
@@ -77,6 +79,19 @@ GREENHOUSE_TOKENS = {
     'Optiver':                          'optiverus',                     # 3 HK jobs confirmed May 2026
     'Virtu Financial':                  'virtu',                         # 2 HK jobs confirmed May 2026
     'Engineers Gate':                   'engineersgate',                 # 2 HK jobs confirmed May 2026
+    # New additions — June 2026
+    'AQR Capital Management':           'aqr',                           # 1 HK, 2 London
+    'Marshall Wace':                    'marshallwace',                  # 2 London (London filter)
+    'Winton':                           'winton',                        # 8 London (London filter)
+    'PDT Partners':                     'pdtpartners',                   # 1 London (London filter)
+}
+
+# Per-company location filter overrides for Greenhouse.
+# London-only funds have 0 HK jobs — filter for London instead of the global HK default.
+GREENHOUSE_LOCATION_OVERRIDES = {
+    'Marshall Wace': 'London',
+    'Winton':        'London',
+    'PDT Partners':  'London',
 }
 
 LEVER_TOKENS = {
@@ -103,6 +118,9 @@ WORKDAY_TOKENS = {
     'Brevan Howard':            {'tenant': 'brevanhoward', 'wd': 'wd3', 'site': 'BH_ExternalCareers'},
     'Wellington Management':    {'tenant': 'wellington',   'wd': 'wd5', 'site': 'External'},          # 0 HK now, board active
     'Dimensional Fund Advisors':{'tenant': 'dimensional',  'wd': 'wd5', 'site': 'DFA_Careers'},       # 0 HK now, board active
+    # New additions — June 2026
+    'Citi':                     {'tenant': 'citi',         'wd': 'wd5', 'site': '2'},                 # HK confirmed
+    'Capital Group':            {'tenant': 'capgroup',     'wd': 'wd1', 'site': 'capitalgroupcareers'},# 2 HK, 11 London
 }
 
 # Goldman Sachs uses a custom GraphQL scraper — no token needed
@@ -116,6 +134,14 @@ SCB_COMPANIES = ['Standard Chartered Hong Kong']
 
 # Millennium Management uses Eightfold at career.mlp.com — public API, no auth required
 MILLENNIUM_COMPANIES = ['Millennium Management']
+
+# HSBC uses Eightfold at hsbc.eightfold.ai — same API pattern as Millennium
+HSBC_COMPANIES = ['HSBC Hong Kong']
+
+# Schroders uses Oracle HCM at ekbq.fa.em2.oraclecloud.com — same pattern as JPMorgan
+# Scraping London (44 jobs) rather than HK (only 2 jobs)
+SCHRODERS_COMPANIES = ['Schroders']
+SCHRODERS_LOCATION_FILTER = 'London'
 
 LOCATION_FILTER = 'Hong Kong'
 DESCRIPTION_DELAY = 0.3   # seconds between description API calls
@@ -176,7 +202,7 @@ def scrape_company(db, company: dict, scraper, fetch_descriptions: bool,
         elif fetch_descriptions:
             platform_id = (job.get('greenhouse_id') or job.get('lever_id')
                            or job.get('workday_path') or job.get('jpmorgan_id')
-                           or job.get('eightfold_id'))
+                           or job.get('schroders_id') or job.get('eightfold_id'))
             if platform_id:
                 try:
                     details = scraper.get_job_details(platform_id)
@@ -289,19 +315,42 @@ def scrape_all(fetch_descriptions: bool = True):
         if missing_mlp:
             warn(f"Millennium — not in DB (run seed): {missing_mlp}")
 
+        # ── HSBC (Eightfold) ──────────────────────────────────────
+        hsbc_companies = [
+            company_by_name[name]
+            for name in HSBC_COMPANIES
+            if name in company_by_name
+        ]
+        missing_hsbc = [name for name in HSBC_COMPANIES if name not in company_by_name]
+        if missing_hsbc:
+            warn(f"HSBC — not in DB (run seed): {missing_hsbc}")
+
+        # ── Schroders (Oracle HCM) ────────────────────────────────
+        schroders_companies = [
+            company_by_name[name]
+            for name in SCHRODERS_COMPANIES
+            if name in company_by_name
+        ]
+        missing_sch = [name for name in SCHRODERS_COMPANIES if name not in company_by_name]
+        if missing_sch:
+            warn(f"Schroders — not in DB (run seed): {missing_sch}")
+
         total = (len(greenhouse_companies) + len(lever_companies) + len(workday_companies)
                  + len(goldman_companies) + len(jpmorgan_companies) + len(scb_companies)
-                 + len(millennium_companies))
+                 + len(millennium_companies) + len(hsbc_companies) + len(schroders_companies))
         log(f"{total} companies to scrape  "
             f"GH={len(greenhouse_companies)}  LV={len(lever_companies)}  "
             f"WD={len(workday_companies)}  GS={len(goldman_companies)}  "
             f"JPM={len(jpmorgan_companies)}  SCB={len(scb_companies)}  "
-            f"MLP={len(millennium_companies)}\n")
+            f"MLP={len(millennium_companies)}  HSBC={len(hsbc_companies)}  "
+            f"SCH={len(schroders_companies)}\n")
 
         for company in greenhouse_companies:
             group(company['name'])
             scraper = GreenhouseScraper(company['name'], GREENHOUSE_TOKENS[company['name']])
-            result = scrape_company(db, company, scraper, fetch_descriptions)
+            loc_filter = GREENHOUSE_LOCATION_OVERRIDES.get(company['name'], LOCATION_FILTER)
+            result = scrape_company(db, company, scraper, fetch_descriptions,
+                                    location_filter=loc_filter)
             results.append(result)
 
             if result['status'] == 'skipped':
@@ -435,6 +484,47 @@ def scrape_all(fetch_descriptions: bool = True):
                     f"Done — {result['new']} new, "
                     f"{result['duplicates']} dupes, "
                     f"{result['found']} HK jobs ({result.get('duration', 0)}s)"
+                )
+            endgroup()
+            time.sleep(COMPANY_DELAY)
+
+        # ── HSBC (Eightfold) ──────────────────────────────────────
+        for company in hsbc_companies:
+            group(company['name'])
+            scraper = HSBCScraper(company['name'])
+            result = scrape_company(db, company, scraper, fetch_descriptions)
+            results.append(result)
+
+            if result['status'] == 'skipped':
+                warn(f"Skipped: {result['reason']}")
+            elif result['status'] == 'failed':
+                error(f"Failed: {result.get('error', 'unknown')}")
+            else:
+                log(
+                    f"Done — {result['new']} new, "
+                    f"{result['duplicates']} dupes, "
+                    f"{result['found']} HK jobs ({result.get('duration', 0)}s)"
+                )
+            endgroup()
+            time.sleep(COMPANY_DELAY)
+
+        # ── Schroders (Oracle HCM, London) ────────────────────────
+        for company in schroders_companies:
+            group(company['name'])
+            scraper = SchrodersScraper(company['name'])
+            result = scrape_company(db, company, scraper, fetch_descriptions,
+                                    location_filter=SCHRODERS_LOCATION_FILTER)
+            results.append(result)
+
+            if result['status'] == 'skipped':
+                warn(f"Skipped: {result['reason']}")
+            elif result['status'] == 'failed':
+                error(f"Failed: {result.get('error', 'unknown')}")
+            else:
+                log(
+                    f"Done — {result['new']} new, "
+                    f"{result['duplicates']} dupes, "
+                    f"{result['found']} London jobs ({result.get('duration', 0)}s)"
                 )
             endgroup()
             time.sleep(COMPANY_DELAY)
