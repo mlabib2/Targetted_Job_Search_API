@@ -281,6 +281,25 @@ TARGET_COMPANIES = [
         'ats_platform': 'Oracle HCM',
         'notes': 'Major UK asset manager, London HQ — Oracle HCM at ekbq.fa.em2.oraclecloud.com, site: CX_2. Scraped with London filter. 44 London, 2 HK confirmed June 2026. Scraper: schroders_scraper.py.'
     },
+    # New additions — July 2026
+    {
+        'name': 'XTX Markets',
+        'career_url': 'https://job-boards.greenhouse.io/xtxmarketstechnologies',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Systematic quant market maker, growing HK office — Greenhouse token: xtxmarketstechnologies confirmed via careers page embed. 5 jobs (London/NY/Singapore), 0 HK confirmed July 2026.'
+    },
+    {
+        'name': 'Capula Investment Management',
+        'career_url': 'https://apply.workable.com/capula-investment-management-ltd/',
+        'ats_platform': 'Workable',
+        'notes': 'Global macro/fixed-income quant hedge fund, ~$35B AUM, offices incl. Hong Kong — public Workable widget API confirmed working (apply.workable.com/api/v1/widget/accounts/capula-investment-management-ltd). 12 jobs total, 1 HK role open (2027 Trading and Research Summer Internship) confirmed July 2026. Scraper: workable_scraper.py. No per-job description endpoint (titles/locations only).'
+    },
+    {
+        'name': 'Arrowpoint Investment Partners',
+        'career_url': 'https://arrowpointfund.com/careers',
+        'ats_platform': 'Custom (Framer)',
+        'notes': 'Asia-focused multi-strat HF (ex-Millennium Asia co-CEO, backed by Blackstone/CPPIB/Temasek), offices in HK/SG/Dubai. No ATS/API — custom Framer site, but static HTML with real job links (confirmed, not JS-only). 6 roles open incl. Quantitative Developer + Trading Application Support Engineer, confirmed July 2026. Location not reliably parseable per-role from listing page, so scraper returns all 6 regardless of filter. Scraper: arrowpoint_scraper.py.'
+    },
 ]
 
 
