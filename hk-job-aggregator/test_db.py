@@ -38,7 +38,7 @@ def test_database():
         # Test 3: Add a job
         print("Test 3: Adding a job...")
         if companies:
-            job_id = db.add_job(
+            job_id, _revived = db.add_job(
                 company_id=companies[0]['id'],
                 title="Senior Software Engineer - Trading Systems",
                 url="https://testcompany.com/jobs/123",
@@ -54,7 +54,7 @@ def test_database():
         # Test 4: Add duplicate job (should be ignored)
         print("Test 4: Testing deduplication (adding same job again)...")
         if companies:
-            duplicate_id = db.add_job(
+            duplicate_id, _revived = db.add_job(
                 company_id=companies[0]['id'],
                 title="Senior Software Engineer - Trading Systems",
                 url="https://testcompany.com/jobs/123",

@@ -24,7 +24,9 @@ from scrapers.standard_chartered_scraper import StandardCharteredScraper
 from scrapers.millennium_scraper import MillenniumScraper
 from scrapers.hsbc_scraper import HSBCScraper
 from scrapers.schroders_scraper import SchrodersScraper
-from models.db import get_db
+from scrapers.workable_scraper import WorkableScraper
+from scrapers.arrowpoint_scraper import ArrowpointScraper
+from models.db import get_db, REACTIVATION_GAP_DAYS
 
 # GitHub Actions log helpers
 CI = os.getenv("GITHUB_ACTIONS") == "true"
@@ -79,11 +81,20 @@ GREENHOUSE_TOKENS = {
     'Optiver':                          'optiverus',                     # 3 HK jobs confirmed May 2026
     'Virtu Financial':                  'virtu',                         # 2 HK jobs confirmed May 2026
     'Engineers Gate':                   'engineersgate',                 # 2 HK jobs confirmed May 2026
+    'Citadel Securities':               'citadelsecurities',             # 200 OK, 0 jobs as of May 2026 — seeded but was missing from this dict
     # New additions — June 2026
     'AQR Capital Management':           'aqr',                           # 1 HK, 2 London
     'Marshall Wace':                    'marshallwace',                  # 2 London (London filter)
     'Winton':                           'winton',                        # 8 London (London filter)
     'PDT Partners':                     'pdtpartners',                   # 1 London (London filter)
+    # New additions — Jul 2026
+    'XTX Markets':                       'xtxmarketstechnologies',       # confirmed via careers page embed; 5 jobs (London/NY/SG), 0 HK as of Jul 2026
+}
+
+# Workable ATS companies — public widget API, no auth required.
+# No per-job description endpoint found (404), so jobs are titles/locations only.
+WORKABLE_TOKENS = {
+    'Capula Investment Management':      'capula-investment-management-ltd',  # confirmed working, 12 jobs total, 1 HK (Trading & Research internship) as of Jul 2026
 }
 
 # Per-company location filter overrides for Greenhouse.
@@ -143,6 +154,9 @@ HSBC_COMPANIES = ['HSBC Hong Kong']
 SCHRODERS_COMPANIES = ['Schroders']
 SCHRODERS_LOCATION_FILTER = 'London'
 
+# Arrowpoint — custom Framer site, no location filtering (see scraper docstring)
+ARROWPOINT_COMPANIES = ['Arrowpoint Investment Partners']
+
 LOCATION_FILTER = 'Hong Kong'
 DESCRIPTION_DELAY = 0.3   # seconds between description API calls
 COMPANY_DELAY = 1.0       # seconds between companies
@@ -178,9 +192,10 @@ def scrape_company(db, company: dict, scraper, fetch_descriptions: bool,
 
     new_count = 0
     dupe_count = 0
+    revived_count = 0
 
     for job in jobs:
-        job_id = db.add_job(
+        job_id, revived = db.add_job(
             company_id=company_id,
             title=job['title'],
             url=job['url'],
@@ -194,15 +209,21 @@ def scrape_company(db, company: dict, scraper, fetch_descriptions: bool,
             log(f"  dup  {job['title'][:55]}")
             continue
 
-        # New job — save description (inline if available, else fetch separately)
-        new_count += 1
-        log(f"  NEW  {job['title'][:55]}")
+        if revived:
+            revived_count += 1
+            log(f"  BACK {job['title'][:55]}  (missing >{REACTIVATION_GAP_DAYS}d, re-entering pipeline)")
+        else:
+            new_count += 1
+            log(f"  NEW  {job['title'][:55]}")
+
+        # New or revived — save description (inline if available, else fetch separately)
         if job.get('description'):
             db.update_job_description(job_id, job['description'])
         elif fetch_descriptions:
             platform_id = (job.get('greenhouse_id') or job.get('lever_id')
                            or job.get('workday_path') or job.get('jpmorgan_id')
-                           or job.get('schroders_id') or job.get('eightfold_id'))
+                           or job.get('schroders_id') or job.get('eightfold_id')
+                           or job.get('workable_id') or job.get('arrowpoint_slug'))
             if platform_id:
                 try:
                     details = scraper.get_job_details(platform_id)
@@ -219,7 +240,7 @@ def scrape_company(db, company: dict, scraper, fetch_descriptions: bool,
         company_id=company_id,
         status='success',
         jobs_found=len(jobs),
-        new_jobs=new_count,
+        new_jobs=new_count + revived_count,
         duration=duration,
     )
 
@@ -228,6 +249,7 @@ def scrape_company(db, company: dict, scraper, fetch_descriptions: bool,
         'status': 'success',
         'found': len(jobs),
         'new': new_count,
+        'revived': revived_count,
         'duplicates': dupe_count,
         'duration': round(duration, 1),
     }
@@ -335,15 +357,37 @@ def scrape_all(fetch_descriptions: bool = True):
         if missing_sch:
             warn(f"Schroders — not in DB (run seed): {missing_sch}")
 
+        # ── Workable companies ────────────────────────────────────
+        workable_companies = [
+            company_by_name[name]
+            for name in WORKABLE_TOKENS
+            if name in company_by_name
+        ]
+        missing_wk = [name for name in WORKABLE_TOKENS if name not in company_by_name]
+        if missing_wk:
+            warn(f"Workable — not in DB (run seed): {missing_wk}")
+
+        # ── Arrowpoint (custom Framer site) ───────────────────────
+        arrowpoint_companies = [
+            company_by_name[name]
+            for name in ARROWPOINT_COMPANIES
+            if name in company_by_name
+        ]
+        missing_ap = [name for name in ARROWPOINT_COMPANIES if name not in company_by_name]
+        if missing_ap:
+            warn(f"Arrowpoint — not in DB (run seed): {missing_ap}")
+
         total = (len(greenhouse_companies) + len(lever_companies) + len(workday_companies)
                  + len(goldman_companies) + len(jpmorgan_companies) + len(scb_companies)
-                 + len(millennium_companies) + len(hsbc_companies) + len(schroders_companies))
+                 + len(millennium_companies) + len(hsbc_companies) + len(schroders_companies)
+                 + len(workable_companies) + len(arrowpoint_companies))
         log(f"{total} companies to scrape  "
             f"GH={len(greenhouse_companies)}  LV={len(lever_companies)}  "
             f"WD={len(workday_companies)}  GS={len(goldman_companies)}  "
             f"JPM={len(jpmorgan_companies)}  SCB={len(scb_companies)}  "
             f"MLP={len(millennium_companies)}  HSBC={len(hsbc_companies)}  "
-            f"SCH={len(schroders_companies)}\n")
+            f"SCH={len(schroders_companies)}  WK={len(workable_companies)}  "
+            f"AP={len(arrowpoint_companies)}\n")
 
         for company in greenhouse_companies:
             group(company['name'])
@@ -358,8 +402,9 @@ def scrape_all(fetch_descriptions: bool = True):
             elif result['status'] == 'failed':
                 error(f"Failed: {result.get('error', 'unknown')}")
             else:
+                revived_note = f", {result['revived']} revived" if result.get('revived') else ""
                 log(
-                    f"Done — {result['new']} new, "
+                    f"Done — {result['new']} new{revived_note}, "
                     f"{result['duplicates']} dupes, "
                     f"{result['found']} HK jobs ({result.get('duration', 0)}s)"
                 )
@@ -378,8 +423,9 @@ def scrape_all(fetch_descriptions: bool = True):
             elif result['status'] == 'failed':
                 error(f"Failed: {result.get('error', 'unknown')}")
             else:
+                revived_note = f", {result['revived']} revived" if result.get('revived') else ""
                 log(
-                    f"Done — {result['new']} new, "
+                    f"Done — {result['new']} new{revived_note}, "
                     f"{result['duplicates']} dupes, "
                     f"{result['found']} HK jobs ({result.get('duration', 0)}s)"
                 )
@@ -400,8 +446,9 @@ def scrape_all(fetch_descriptions: bool = True):
             elif result['status'] == 'failed':
                 error(f"Failed: {result.get('error', 'unknown')}")
             else:
+                revived_note = f", {result['revived']} revived" if result.get('revived') else ""
                 log(
-                    f"Done — {result['new']} new, "
+                    f"Done — {result['new']} new{revived_note}, "
                     f"{result['duplicates']} dupes, "
                     f"{result['found']} HK jobs ({result.get('duration', 0)}s)"
                 )
@@ -420,8 +467,9 @@ def scrape_all(fetch_descriptions: bool = True):
             elif result['status'] == 'failed':
                 error(f"Failed: {result.get('error', 'unknown')}")
             else:
+                revived_note = f", {result['revived']} revived" if result.get('revived') else ""
                 log(
-                    f"Done — {result['new']} new, "
+                    f"Done — {result['new']} new{revived_note}, "
                     f"{result['duplicates']} dupes, "
                     f"{result['found']} HK jobs ({result.get('duration', 0)}s)"
                 )
@@ -440,8 +488,9 @@ def scrape_all(fetch_descriptions: bool = True):
             elif result['status'] == 'failed':
                 error(f"Failed: {result.get('error', 'unknown')}")
             else:
+                revived_note = f", {result['revived']} revived" if result.get('revived') else ""
                 log(
-                    f"Done — {result['new']} new, "
+                    f"Done — {result['new']} new{revived_note}, "
                     f"{result['duplicates']} dupes, "
                     f"{result['found']} HK jobs ({result.get('duration', 0)}s)"
                 )
@@ -460,8 +509,9 @@ def scrape_all(fetch_descriptions: bool = True):
             elif result['status'] == 'failed':
                 error(f"Failed: {result.get('error', 'unknown')}")
             else:
+                revived_note = f", {result['revived']} revived" if result.get('revived') else ""
                 log(
-                    f"Done — {result['new']} new, "
+                    f"Done — {result['new']} new{revived_note}, "
                     f"{result['duplicates']} dupes, "
                     f"{result['found']} HK jobs ({result.get('duration', 0)}s)"
                 )
@@ -480,8 +530,9 @@ def scrape_all(fetch_descriptions: bool = True):
             elif result['status'] == 'failed':
                 error(f"Failed: {result.get('error', 'unknown')}")
             else:
+                revived_note = f", {result['revived']} revived" if result.get('revived') else ""
                 log(
-                    f"Done — {result['new']} new, "
+                    f"Done — {result['new']} new{revived_note}, "
                     f"{result['duplicates']} dupes, "
                     f"{result['found']} HK jobs ({result.get('duration', 0)}s)"
                 )
@@ -500,8 +551,9 @@ def scrape_all(fetch_descriptions: bool = True):
             elif result['status'] == 'failed':
                 error(f"Failed: {result.get('error', 'unknown')}")
             else:
+                revived_note = f", {result['revived']} revived" if result.get('revived') else ""
                 log(
-                    f"Done — {result['new']} new, "
+                    f"Done — {result['new']} new{revived_note}, "
                     f"{result['duplicates']} dupes, "
                     f"{result['found']} HK jobs ({result.get('duration', 0)}s)"
                 )
@@ -521,33 +573,80 @@ def scrape_all(fetch_descriptions: bool = True):
             elif result['status'] == 'failed':
                 error(f"Failed: {result.get('error', 'unknown')}")
             else:
+                revived_note = f", {result['revived']} revived" if result.get('revived') else ""
                 log(
-                    f"Done — {result['new']} new, "
+                    f"Done — {result['new']} new{revived_note}, "
                     f"{result['duplicates']} dupes, "
                     f"{result['found']} London jobs ({result.get('duration', 0)}s)"
                 )
             endgroup()
             time.sleep(COMPANY_DELAY)
 
+        # ── Workable companies ─────────────────────────────────────
+        for company in workable_companies:
+            group(company['name'])
+            scraper = WorkableScraper(company['name'], WORKABLE_TOKENS[company['name']])
+            result = scrape_company(db, company, scraper, fetch_descriptions)
+            results.append(result)
+
+            if result['status'] == 'skipped':
+                warn(f"Skipped: {result['reason']}")
+            elif result['status'] == 'failed':
+                error(f"Failed: {result.get('error', 'unknown')}")
+            else:
+                revived_note = f", {result['revived']} revived" if result.get('revived') else ""
+                log(
+                    f"Done — {result['new']} new{revived_note}, "
+                    f"{result['duplicates']} dupes, "
+                    f"{result['found']} HK jobs ({result.get('duration', 0)}s)"
+                )
+            endgroup()
+            time.sleep(COMPANY_DELAY)
+
+        # ── Arrowpoint (custom Framer site) ────────────────────────
+        for company in arrowpoint_companies:
+            group(company['name'])
+            scraper = ArrowpointScraper(company['name'])
+            result = scrape_company(db, company, scraper, fetch_descriptions)
+            results.append(result)
+
+            if result['status'] == 'skipped':
+                warn(f"Skipped: {result['reason']}")
+            elif result['status'] == 'failed':
+                error(f"Failed: {result.get('error', 'unknown')}")
+            else:
+                revived_note = f", {result['revived']} revived" if result.get('revived') else ""
+                log(
+                    f"Done — {result['new']} new{revived_note}, "
+                    f"{result['duplicates']} dupes, "
+                    f"{result['found']} jobs ({result.get('duration', 0)}s)"
+                )
+            endgroup()
+            time.sleep(COMPANY_DELAY)
+
         # ── Summary ──────────────────────────────────────────────
-        total_new   = sum(r.get('new', 0) for r in results if r['status'] == 'success')
-        total_found = sum(r.get('found', 0) for r in results if r['status'] == 'success')
+        total_new     = sum(r.get('new', 0) for r in results if r['status'] == 'success')
+        total_revived = sum(r.get('revived', 0) for r in results if r['status'] == 'success')
+        total_found   = sum(r.get('found', 0) for r in results if r['status'] == 'success')
         failed  = [r for r in results if r['status'] == 'failed']
         skipped = [r for r in results if r['status'] == 'skipped']
 
         group("Scrape Summary")
         col = 35
-        log(f"{'Company':<{col}} {'HK Found':>9} {'New':>6} {'Dupes':>6}  Status")
-        log("-" * (col + 30))
+        log(f"{'Company':<{col}} {'HK Found':>9} {'New':>6} {'Revived':>8} {'Dupes':>6}  Status")
+        log("-" * (col + 38))
         for r in results:
             if r['status'] == 'success':
-                log(f"{r['company']:<{col}} {r['found']:>9} {r['new']:>6} {r['duplicates']:>6}  ✓")
+                log(f"{r['company']:<{col}} {r['found']:>9} {r['new']:>6} {r.get('revived', 0):>8} {r['duplicates']:>6}  ✓")
             elif r['status'] == 'skipped':
-                log(f"{r['company']:<{col}} {'—':>9} {'—':>6} {'—':>6}  ⊘ skipped")
+                log(f"{r['company']:<{col}} {'—':>9} {'—':>6} {'—':>8} {'—':>6}  ⊘ skipped")
             else:
-                log(f"{r['company']:<{col}} {'—':>9} {'—':>6} {'—':>6}  ✗ FAILED")
-        log("-" * (col + 30))
-        log(f"{'TOTAL':<{col}} {total_found:>9} {total_new:>6}")
+                log(f"{r['company']:<{col}} {'—':>9} {'—':>6} {'—':>8} {'—':>6}  ✗ FAILED")
+        log("-" * (col + 38))
+        log(f"{'TOTAL':<{col}} {total_found:>9} {total_new:>6} {total_revived:>8}")
+
+        if total_revived:
+            warn(f"{total_revived} job(s) reactivated after being missing >{REACTIVATION_GAP_DAYS}d — rescored and back in the digest queue")
 
         if failed:
             warn(f"Failures: {[r['company'] for r in failed]}")

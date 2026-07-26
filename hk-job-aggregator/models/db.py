@@ -15,6 +15,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# A job that hashes to an existing row (same company+title+url) but hasn't
+# been seen in a scrape for longer than this is treated as reopened, not a
+# plain duplicate — see add_job().
+REACTIVATION_GAP_DAYS = 3
+
 
 class JobDatabase:
     """Main database interface"""
@@ -80,23 +85,29 @@ class JobDatabase:
     # ============================================
 
     def add_job(self, company_id: int, title: str, url: str,
-                description: str = None, **kwargs) -> Optional[int]:
+                description: str = None, **kwargs) -> tuple[Optional[int], bool]:
         """
-        Add a new job (if not duplicate)
-        Returns job_id if new, None if duplicate
+        Add a new job (if not duplicate).
+        Returns (job_id, revived):
+          - (id, False)  → brand new row
+          - (None, False) → true duplicate, seen recently, nothing changed
+          - (id, True)   → existing row reactivated (see REACTIVATION_GAP_DAYS) —
+                           notified_at/match_score reset so it re-enters the
+                           scoring + digest pipeline as if new
         """
         job_hash = self._generate_job_hash(company_id, title, url)
 
-        if self.job_exists(job_hash):
-            cur = self._cursor()
-            cur.execute("""
-                UPDATE jobs SET last_seen_at = CURRENT_TIMESTAMP
-                WHERE job_hash = %s
-            """, (job_hash,))
-            return None
+        cur = self._cursor()
+        cur.execute(
+            "SELECT id, last_seen_at FROM jobs WHERE job_hash = %s",
+            (job_hash,)
+        )
+        existing = cur.fetchone()
+
+        if existing:
+            return self._touch_or_revive(existing['id'], existing['last_seen_at'])
 
         try:
-            cur = self._cursor()
             cur.execute("""
                 INSERT INTO jobs (
                     company_id, job_hash, title, url, description,
@@ -111,15 +122,37 @@ class JobDatabase:
                 kwargs.get('requirements'),
                 kwargs.get('posted_date')
             ))
-            return cur.fetchone()['id']
+            return cur.fetchone()['id'], False
         except psycopg2.errors.UniqueViolation:
-            # URL already exists under a different hash — treat as duplicate
-            cur = self._cursor()
+            # URL already exists under a different hash (e.g. title changed)
             cur.execute(
-                "UPDATE jobs SET last_seen_at = CURRENT_TIMESTAMP WHERE url = %s",
+                "SELECT id, last_seen_at FROM jobs WHERE url = %s",
                 (url,)
             )
-            return None
+            row = cur.fetchone()
+            return self._touch_or_revive(row['id'], row['last_seen_at'])
+
+    def _touch_or_revive(self, job_id: int, last_seen_at) -> tuple[Optional[int], bool]:
+        """Shared logic for both dedup paths in add_job()."""
+        cur = self._cursor()
+        gap_days = (datetime.now(last_seen_at.tzinfo) - last_seen_at).days if last_seen_at else 0
+
+        if gap_days > REACTIVATION_GAP_DAYS:
+            cur.execute("""
+                UPDATE jobs
+                SET last_seen_at = CURRENT_TIMESTAMP,
+                    notified_at = NULL,
+                    match_score = NULL,
+                    match_reasons = NULL
+                WHERE id = %s
+            """, (job_id,))
+            return job_id, True
+
+        cur.execute(
+            "UPDATE jobs SET last_seen_at = CURRENT_TIMESTAMP WHERE id = %s",
+            (job_id,)
+        )
+        return None, False
 
     def update_job_description(self, job_id: int, description: str):
         """Set description on a newly added job"""
