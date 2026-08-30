@@ -300,6 +300,36 @@ TARGET_COMPANIES = [
         'ats_platform': 'Custom (Framer)',
         'notes': 'Asia-focused multi-strat HF (ex-Millennium Asia co-CEO, backed by Blackstone/CPPIB/Temasek), offices in HK/SG/Dubai. No ATS/API — custom Framer site, but static HTML with real job links (confirmed, not JS-only). 6 roles open incl. Quantitative Developer + Trading Application Support Engineer, confirmed July 2026. Location not reliably parseable per-role from listing page, so scraper returns all 6 regardless of filter. Scraper: arrowpoint_scraper.py.'
     },
+    {
+        'name': 'Eclipse Trading',
+        'career_url': 'https://boards.greenhouse.io/eclipsetrading',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Prop trading/market maker HQ\'d in Hong Kong (Chicago is the satellite office) — Greenhouse token: eclipsetrading. 15 of 18 open roles are HK confirmed July 2026 (Options Trader, Low Latency C++ Engineer, Junior Trading Analyst, etc.).'
+    },
+    {
+        'name': 'Da Vinci Trading',
+        'career_url': 'https://boards.greenhouse.io/davinciderivatives',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Derivatives market maker, offices incl. Amsterdam/Miami/Mumbai/HK — Greenhouse token: davinciderivatives. 1 HK job confirmed July 2026 (Experienced Quant, of 11 total postings).'
+    },
+    {
+        'name': 'Amber Group',
+        'career_url': 'https://jobs.lever.co/ambergroup',
+        'ats_platform': 'Lever',
+        'notes': 'HK-founded crypto/digital-asset trading firm — Lever token: ambergroup. 2 HK jobs confirmed July 2026 (Blockchain Developer - Platform Trading, Quant Researcher - Statistical Arbitrage). First active Lever integration in this project.'
+    },
+    {
+        'name': 'Mako Trading',
+        'career_url': 'https://boards.greenhouse.io/mako',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Options market maker — Greenhouse token: mako, board confirmed working. 0 HK jobs as of July 2026; Mako\'s own office-locations page (mako.com) currently lists London/Dublin/Amsterdam/Singapore/Sydney/Brisbane/Chengdu — Hong Kong is NOT on that list despite older secondary sources claiming an HK office. Kept seeded for future-proofing in case an HK role appears; not expected to yield jobs soon.'
+    },
+    {
+        'name': 'Vatic Labs',
+        'career_url': 'https://job-boards.greenhouse.io/vaticlabs',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Quant trading firm — Greenhouse token: vaticlabs, board confirmed working. 0 HK jobs as of July 2026; open roles are New York/Abu Dhabi/Singapore only, no Hong Kong office found on vaticlabs.ai. Kept seeded for future-proofing only.'
+    },
 ]
 
 

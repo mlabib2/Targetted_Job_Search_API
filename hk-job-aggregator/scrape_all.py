@@ -89,6 +89,10 @@ GREENHOUSE_TOKENS = {
     'PDT Partners':                     'pdtpartners',                   # 1 London (London filter)
     # New additions — Jul 2026
     'XTX Markets':                       'xtxmarketstechnologies',       # confirmed via careers page embed; 5 jobs (London/NY/SG), 0 HK as of Jul 2026
+    'Eclipse Trading':                   'eclipsetrading',                # HK is HQ — 15 of 18 jobs HK confirmed Jul 2026
+    'Da Vinci Trading':                  'davinciderivatives',            # 1 HK job confirmed Jul 2026 (of 11 total)
+    'Mako Trading':                      'mako',                          # board confirmed working; 0 HK as of Jul 2026 — Mako's own office list (London/Dublin/Amsterdam/Singapore/Sydney/Brisbane/Chengdu) no longer includes HK, kept for future-proofing only
+    'Vatic Labs':                        'vaticlabs',                     # board confirmed working; 0 HK as of Jul 2026 — roles are NY/Abu Dhabi/Singapore only, no HK office evidence found, kept for future-proofing only
 }
 
 # Workable ATS companies — public widget API, no auth required.
@@ -112,6 +116,7 @@ LEVER_TOKENS = {
     # Removed: Hudson River Trading (moved to Greenhouse above, token: wehrtyou)
     # Removed: Optiver (uses Greenhouse, token: optiverus)
     # Removed: Virtu Financial (uses Greenhouse, token: virtu)
+    'Amber Group':                       'ambergroup',                    # 2 HK jobs confirmed Jul 2026 (Blockchain Developer, Quant Researcher)
 }
 
 # Workday companies: name must match the DB 'name' column exactly (from seed_companies.py)
