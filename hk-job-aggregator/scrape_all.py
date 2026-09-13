@@ -89,12 +89,27 @@ GREENHOUSE_TOKENS = {
     'PDT Partners':                     'pdtpartners',                   # 1 London (London filter)
     # New additions — Jul 2026
     'XTX Markets':                       'xtxmarketstechnologies',       # confirmed via careers page embed; 5 jobs (London/NY/SG), 0 HK as of Jul 2026
+    'Eclipse Trading':                   'eclipsetrading',                # HK is HQ — 15 of 18 jobs HK confirmed Jul 2026
+    'Da Vinci Trading':                  'davinciderivatives',            # 1 HK job confirmed Jul 2026 (of 11 total)
+    'Mako Trading':                      'mako',                          # board confirmed working; 0 HK as of Jul 2026 — Mako's own office list (London/Dublin/Amsterdam/Singapore/Sydney/Brisbane/Chengdu) no longer includes HK, kept for future-proofing only
+    'Vatic Labs':                        'vaticlabs',                     # board confirmed working; 0 HK as of Jul 2026 — roles are NY/Abu Dhabi/Singapore only, no HK office evidence found, kept for future-proofing only
+    # New additions — May 2026 (from personal target-company list gap-check)
+    'GSA Capital':                       'gsacapital',                    # 9 jobs, all London/New York, 0 HK — incl. "Software Developer" (London). London filter applied below.
+    'Maverick Derivatives':              'maverickderivatives',           # 2 jobs (Singapore/Amsterdam), 0 HK — kept for future-proofing
+    'Geneva Trading':                    'genevatrading',                 # 11 jobs (Chicago/Dublin/London incl. "OTC Oil Desk Lead"), 0 HK — London filter applied below
+    'Epoch Capital':                     'epochcapital',                  # 1 job, location listed as "All", 0 HK confirmed — kept for future-proofing
+    'Chicago Trading Company':           'chicagotrading',                # 25 jobs, all Chicago/NY, 0 HK — kept for future-proofing
 }
 
 # Workable ATS companies — public widget API, no auth required.
 # No per-job description endpoint found (404), so jobs are titles/locations only.
 WORKABLE_TOKENS = {
     'Capula Investment Management':      'capula-investment-management-ltd',  # confirmed working, 12 jobs total, 1 HK (Trading & Research internship) as of Jul 2026
+    # New additions — May 2026 (Chicago prop shops from personal target-company list; 0 HK jobs, kept for future-proofing per Mako/Vatic precedent)
+    'Allston Trading':                   'allston-trading',               # board confirmed, name matches exactly, 0 jobs open as of May 2026
+    'Wolverine Trading':                 'wolverine',                     # board confirmed, name="Wolverine" (lower-confidence token match), 0 jobs open as of May 2026
+    'Quantbox Research':                 'quantbox',                      # board confirmed, name="QuantBox", 0 jobs open as of May 2026
+    'Eagle Seven':                       'eagle-seven',                   # board confirmed, name matches exactly, 5 jobs open (Chicago) as of May 2026 — Algorithmic Trader, Energy Trader, Junior Trader, Senior Software Developer, Technology Operations Engineer
 }
 
 # Per-company location filter overrides for Greenhouse.
@@ -103,6 +118,8 @@ GREENHOUSE_LOCATION_OVERRIDES = {
     'Marshall Wace': 'London',
     'Winton':        'London',
     'PDT Partners':  'London',
+    'GSA Capital':   'London',
+    'Geneva Trading':'London',
 }
 
 LEVER_TOKENS = {
@@ -112,6 +129,10 @@ LEVER_TOKENS = {
     # Removed: Hudson River Trading (moved to Greenhouse above, token: wehrtyou)
     # Removed: Optiver (uses Greenhouse, token: optiverus)
     # Removed: Virtu Financial (uses Greenhouse, token: virtu)
+    'Amber Group':                       'ambergroup',                    # 2 HK jobs confirmed Jul 2026 (Blockchain Developer, Quant Researcher)
+    # New additions — May 2026 (from personal target-company list gap-check)
+    'Belvedere Trading':                 'belvederetrading',              # 16 jobs (Chicago/Singapore/NY), 0 HK — kept for future-proofing
+    'Valkyrie Trading':                  'valkyrietrading',               # 6 jobs (Chicago), 0 HK — kept for future-proofing
 }
 
 # Workday companies: name must match the DB 'name' column exactly (from seed_companies.py)

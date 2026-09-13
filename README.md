@@ -1,22 +1,22 @@
 # HK Job Aggregator
 
-Automated job monitoring for Hong Kong finance and quant roles. Scrapes job postings from 44 target companies across 8 ATS platforms, uses AI to match against your CV, and sends a daily email digest of the best fits.
+Automated job monitoring for Hong Kong finance and quant roles. Scrapes job postings from 54 target companies across 9 ATS platforms, uses AI to match against your CV, and sends a daily email digest of the best fits.
 
-_Company count last verified against `scrape_all.py` (source of truth) on 2026-07-26 — `README.md` had drifted out of date since May 2026._
+_Company count last verified against `scrape_all.py` (source of truth) on 2026-05-31._
 
 ## Pipeline
 
 ```
 GitHub Actions (daily, 5am HKT)
-  → Scrape 44 companies across 8 ATS platforms
+  → Scrape 54 companies across 9 ATS platforms
     → Store & deduplicate in Supabase (PostgreSQL)
       → AI-score new jobs against CV (Claude Haiku)
         → Email daily digest via Gmail SMTP
 ```
 
-## Companies Scraped (44 active)
+## Companies Scraped (54 active)
 
-### Greenhouse (23 companies)
+### Greenhouse (28 companies)
 | Company | Token | Typical HK Jobs |
 |---|---|---|
 | Qube Research & Technologies | `quberesearchandtechnologies` | ~24 |
@@ -39,9 +39,18 @@ GitHub Actions (daily, 5am HKT)
 | AQR Capital Management | `aqr` | ~1 (2 London) |
 | Citadel Securities | `citadelsecurities` | 0 (board active, watch) |
 | XTX Markets | `xtxmarketstechnologies` | 0 (5 total — London/NY/SG) |
+| Eclipse Trading | `eclipsetrading` | HK is HQ — 15 of 18 total |
+| Da Vinci Trading | `davinciderivatives` | ~1 (of 11 total) |
 | Marshall Wace | `marshallwace` | 0 HK (2 London, London filter) |
 | Winton | `winton` | 0 HK (8 London, London filter) |
 | PDT Partners | `pdtpartners` | 0 HK (1 London, London filter) |
+| GSA Capital | `gsacapital` | 0 HK (8 London/NY, London filter) |
+| Mako Trading | `mako` | 0 (board active, future-proofing) |
+| Vatic Labs | `vaticlabs` | 0 (board active, future-proofing) |
+| Maverick Derivatives | `maverickderivatives` | 0 (2 total — Singapore/Amsterdam, future-proofing) |
+| Geneva Trading | `genevatrading` | 0 HK (1 London — "OTC Oil Desk Lead", London filter) |
+| Epoch Capital | `epochcapital` | 0 (1 total, location "All", future-proofing) |
+| Chicago Trading Company | `chicagotrading` | 0 (25 total — Chicago/NY, future-proofing) |
 
 ### Workday (13 companies)
 | Company | Tenant / Site |
@@ -70,10 +79,21 @@ GitHub Actions (daily, 5am HKT)
 | HSBC | Eightfold API | `hsbc.eightfold.ai` — ~233 HK jobs |
 | Schroders | Oracle HCM REST API | `ekbq.fa.em2.oraclecloud.com` — scraped with London filter, 2 HK |
 
-### Workable (1 company)
+### Workable (5 companies)
 | Company | Account | Notes |
 |---|---|---|
 | Capula Investment Management | `capula-investment-management-ltd` | Public widget API, titles/locations only (no description endpoint) — 1 HK role as of Jul 2026 |
+| Allston Trading | `allston-trading` | 0 jobs open, Chicago prop shop, kept for future-proofing |
+| Wolverine Trading | `wolverine` | 0 jobs open, Chicago prop shop, kept for future-proofing |
+| Quantbox Research | `quantbox` | 0 jobs open, kept for future-proofing |
+| Eagle Seven | `eagle-seven` | 5 jobs open (all Chicago), kept for future-proofing |
+
+### Lever (3 companies)
+| Company | Token | Typical HK Jobs |
+|---|---|---|
+| Amber Group | `ambergroup` | ~2 (Blockchain Developer, Quant Researcher) |
+| Belvedere Trading | `belvederetrading` | 0 (16 total — Chicago/Singapore/NY, future-proofing) |
+| Valkyrie Trading | `valkyrietrading` | 0 (6 total — Chicago, future-proofing) |
 
 ### Custom — Framer site (1 company)
 | Company | Method | Notes |
@@ -82,54 +102,70 @@ GitHub Actions (daily, 5am HKT)
 
 ## Personal Target List Coverage
 
-Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_Funds.csv`, maintained outside this repo). Last checked: **2026-07-26**.
+Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_Funds.csv`, maintained outside this repo). Last checked: **2026-06-03**.
 
 | Status | Count |
 |---|---|
-| ✅ Tracked (actively scraped) | 33 |
-| ✗ Confirmed dead end (no usable public API / no HK office) | 17 |
-| ? Not yet researched | 31 |
+| ✅ Tracked (actively scraped) | 49 |
+| ✗ Confirmed dead end (no usable public API / no HK office) | 32 |
+| ? Not yet researched | 0 |
 | **Total target firms** | **81** |
 
-### ✅ Tracked — actively scraped (33)
+### ✅ Tracked — actively scraped (49)
 
 | Target list name | Platform |
 |---|---|
+| Allston Trading | Workable |
+| Amber Group | Lever |
 | AQR Capital Management | Greenhouse |
 | Arrowpoint Investment Partners (HK) → *Arrowpoint Investment Partners* | Custom (Framer) |
 | Barclays → *Barclays Hong Kong* | Workday |
+| Belvedere Trading | Lever |
 | BlackRock (Aladdin / SAE) → *BlackRock* | Workday |
 | Capula Investment Management | Workable |
+| Chicago Trading Company | Greenhouse |
 | Citadel Securities | Greenhouse |
 | Citigroup → *Citi* | Workday |
-| DRW | Greenhouse |
+| Da Vinci Trading | Greenhouse |
 | Deutsche Bank | Workday |
+| DRW | Greenhouse |
+| Eagle Seven | Workable |
+| Eclipse Trading | Greenhouse |
+| Epoch Capital | Greenhouse |
 | Flow Traders | Greenhouse |
+| Geneva Trading | Greenhouse (London filter) |
 | Goldman Sachs → *Goldman Sachs Hong Kong* | Custom GraphQL |
+| GSA Capital | Greenhouse (London filter) |
 | HSBC → *HSBC Hong Kong* | Eightfold |
 | Hudson River Trading | Greenhouse |
 | IMC Trading | Greenhouse |
 | Interactive Brokers (IBKR) → *Interactive Brokers* | Greenhouse |
-| JPMorgan → *JPMorgan Chase Hong Kong* | Oracle HCM |
 | Jane Street | Greenhouse |
+| JPMorgan → *JPMorgan Chase Hong Kong* | Oracle HCM |
 | Jump Trading | Greenhouse |
+| Mako Trading | Greenhouse |
 | Man Group (AHL) → *Man Group* | Greenhouse |
 | Marshall Wace | Greenhouse |
+| Maverick Derivatives | Greenhouse |
 | Millennium Management | Eightfold |
 | Morgan Stanley → *Morgan Stanley Hong Kong* | Workday |
 | Optiver | Greenhouse |
 | Point72 / Cubist → *Point72* | Greenhouse |
+| Quantbox Research | Workable |
 | Qube Research (QRT) → *Qube Research & Technologies* | Greenhouse |
 | Schonfeld | Greenhouse |
 | Squarepoint Capital | Greenhouse |
 | Standard Chartered → *Standard Chartered Hong Kong* | J2W sitemap |
 | Tower Research Capital | Greenhouse |
+| Valkyrie Trading | Lever |
+| Vatic Labs | Greenhouse |
 | Virtu Financial | Greenhouse |
 | Winton Group → *Winton* | Greenhouse |
+| Wolverine Trading | Workable |
 | WorldQuant | Greenhouse |
 | XTX Markets | Greenhouse |
 
-### ✗ Confirmed dead end — don't re-research (17)
+### ✗ Confirmed dead end — don't re-research (32)
 
 | Firm | Reason |
 |---|---|
@@ -138,7 +174,6 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | DE Shaw | Workday `deshaw.wd1` — 401, auth required (private board) |
 | Two Sigma | Custom site (`careers.twosigma.com`) — no public API, 0 HK jobs in practice |
 | Teza Technologies | Confirmed no Hong Kong office (US-only) |
-| GSA Capital | Greenhouse `gsacapital` — 10 jobs, all London/NY, 0 HK (rechecked Jul 2026) |
 | Balyasny | Workday `bamfunds.wd1` — 401, auth required (private board) |
 | Five Rings Capital | Confirmed no Hong Kong office (US-only) |
 | Akuna Capital | Greenhouse `akunacapital` — 0 HK jobs (Chicago/Sydney/Singapore only) |
@@ -150,44 +185,39 @@ Cross-referenced against the 81-firm personal target list (`Company_List_Hedge_F
 | Exodus Point Capital Management | Greenhouse `exoduspoint` — 2 generic jobs, 0 HK (rechecked Jul 2026) |
 | Bridgewater Associates | Lever 404; near-zero HK presence (client relations only) |
 | Bloomberg | Workday tenant unclear — found Bloomberg Industry Group's (different affiliate), not LP/Terminal's; needs manual URL discovery |
+| Chimera Securities | Workable `chimera-securities-llc` confirmed real — but NYC-only, 1 entry-level equity trader role, no HK/Asia office (checked Jun 2026) |
+| Algorithmic Trading Grp | Live site (algorithmictradinggroup.com) is a barebones placeholder ("Welcome to ATG") — `/careers` 404s, no actual recruiting infrastructure despite third-party listings claiming an HK/Amsterdam HQ (checked Jun 2026) |
+| Marquette Partners | Chicago-only prop shop; careers page is email-only (`info@mqpllc.com`), no ATS/API of any kind (checked Jun 2026) |
+| Domstad Traders | Utrecht, Netherlands prop shop (part of "Accent Groupe"); no HK/Asia presence found (checked Jun 2026) |
+| Genk Capital | Singapore-only, explicitly "onsite" positions; email-only application (no ATS); also outside current HK/London/US-sponsorship geographic scope (checked Jun 2026) |
+| All Options | Amsterdam + Austin TX only; careers page uses a WordPress→BambooHR plugin embed, not a public API; no HK/Asia presence (checked Jun 2026) |
+| Z.R.T.X. | Identified as Z.R.T.X. Trading Ltd, a Cyprus (Larnaca)-based prop firm under "Accent Groupe" — unrelated to HK job search, no scrapeable API needed (checked Jun 2026) |
+| Deep Blue Capital | Real Amsterdam-HQ stat-arb firm with a small confirmed HK office (Deep Blue Capital (HK) Limited, ~3 staff) — but `deepbluecap.com/vacancies` lists zero openings and is email-only (`recruitment@deepbluecap.com`), no ATS/API of any kind (confirmed via live browser render, checked Jun 2026) |
+| Matrix Executions | Chicago/NY-only agency options broker (FINRA BrokerCheck #38455) — team page lists only Chicago/NY staff, no Hong Kong or APAC office found ("Matrix Asia Pacific" is an unrelated solar/sourcing company, not this firm); careers page is email-only (`careers@matrixexecutions.com`), no ATS (checked Jun 2026) |
+| Grace Hall Trading | Chicago + Charlotte NC prop firm (part of Simplex Investments) — no Hong Kong presence found anywhere; `gracehall.com` is an unclaimed/disconnected Wix domain with no live site at all (confirmed via live browser render, checked Jun 2026) |
+| Market Wizards | Amsterdam-based prop trading/partnership firm — no Hong Kong presence found; careers page lists zero open positions, contact form only, no ATS (confirmed via live browser render, checked Jun 2026) |
+| Prime Trading | Chicago/NY prop trading firm (member CME/NYMEX/CBOT/COMEX/ICE/Eurex since 1987) — no confirmed Hong Kong office (only generic "global ties to Asia" marketing copy, no actual office found); "Join Us" page is a plain contact form, not an ATS. Note: an unrelated, similarly-named "Prime Trading Global" is on the HK SFC's unlicensed-entity alert list — a different, unlicensed outfit, not this firm (checked Jun 2026) |
+| Seven Points Capital | NYC-based prop firm with offices in NJ/FL/Toronto, expanded to London Jan 2026 — no Hong Kong/Asia presence found anywhere; uses Pinpoint ATS (not a supported platform in this repo), moot given geography (checked Jun 2026) |
+| League Trading | Austin, TX-based futures/options clearing & prop firm since 1986 (`theleaguecorp.com`) — single-office, no Hong Kong/Asia presence anywhere on site; "Opportunities" page is static text with no application mechanism at all, no ATS (confirmed via live browser render, checked Jun 2026) |
+| Barak Capital | Amsterdam + Tel Aviv only — live careers page (`barakmarketmaking.com/careers`) lists 8 open roles, all in those two cities, no Hong Kong/Asia office; uses non-standard ATS (Numbr Shire / forms.app), not a supported platform anyway (checked Jun 2026) |
+| Liquid Capital Group | Real derivatives market maker with a genuine HK legal entity (Liquid Capital Markets Hong Kong Limited — confirmed via LinkedIn/Hedgeweek/IPC press coverage) — but `liquidcapital.com` is currently unreachable (DNS resolves to nameservers with no A record; confirmed down via live browser render too), so there's no live careers page/ATS to scrape. Even cached page content showed zero vacancies and email-only application (`careers@liquidcapital.com`). Worth revisiting if the site comes back online (checked Jun 2026) |
 
-### ? Not tracked — never researched (31)
+### ? Not tracked — never researched (0)
 
-Mostly small Chicago-based prop shops with unconfirmed Hong Kong presence. Deprioritized to avoid burning research time on long-shot firms — revisit if one becomes specifically relevant.
+All 81 target-list firms have now been resolved (tracked or confirmed dead end) as of Jun 2026. If new firms are ever added to the personal target list, they'd land here first.
 
-| Firm | HK presence (per target list) |
+**Note (Jun 2026):** the generic single-word ATS-token guesses (`matrix`, `eagle`, `grace`, `market`, `prime`, `seven`, `deep`/`deepblue`, `league`, `barak`, `liquid`) all returned HTTP 200 on Workable/Ashby, but every one was verified to be an unrelated company that happens to share the slug (e.g. `ashbyhq.com/.../eagle` is an unrelated AI startup posting "Forward Deployed Engineer" roles, not Eagle Seven; `workable.com/.../liquid` is an unrelated AI startup posting "Member of Technical Staff" roles, not Liquid Capital Group). Don't treat a bare HTTP 200 on a generic token as a match — always confirm the returned company name/job content first.
+
+## Other Job Portals Considered
+
+Per the user's suggestion, Indeed and Glassdoor were evaluated as additional scraping sources (Jun 2026). Neither is feasible:
+
+| Portal | Finding |
 |---|---|
-| Amber Group | Yes |
-| Mako Trading | Yes |
-| All Options | Likely |
-| Vatic Labs | Likely |
-| Deep Blue Capital | Yes |
-| Allston Trading | Likely |
-| Da Vinci Trading | Likely |
-| Chimera Securities | Yes |
-| Matrix Executions | Likely |
-| Eclipse Trading | Likely |
-| Algorithmic Trading Grp | Uncertain |
-| Maverick Derivatives | Likely |
-| Wolverine Trading | Likely |
-| Belvedere Trading | Likely |
-| Geneva Trading | Uncertain |
-| Epoch Capital | Uncertain |
-| Eagle Seven | Uncertain |
-| Grace Hall Trading | Uncertain |
-| Market Wizards | Uncertain |
-| Prime Trading | Uncertain |
-| Quantbox Research | Uncertain |
-| Seven Points Capital | Uncertain |
-| Valkyrie Trading | Uncertain |
-| League Trading | Uncertain |
-| Marquette Partners | Uncertain |
-| Barak Capital | Uncertain |
-| Domstad Traders | Uncertain |
-| Genk Capital | Uncertain |
-| Chicago Trading Company | Uncertain |
-| Liquid Capital Group | Uncertain |
-| Z.R.T.X. | Uncertain |
+| Indeed | Publisher API (the old public job-search API) was retired in 2022/2023 and never replaced with a self-serve equivalent — no API keys have been issued since. What remains (`partners.indeed.com`) is partner-gated and one-directional (Indeed Apply / Sponsored Jobs, for *pushing* postings into Indeed, not pulling search results out), requiring a signed developer agreement and Indeed's discretionary approval — not viable for a personal project. Direct scraping is also not a fallback: as of mid-2026 Indeed sits behind Cloudflare + a custom bot-challenge layer that returns HTTP 403 on effectively all automated requests, including plain page loads, regardless of proxy/JS-rendering setup. |
+| Glassdoor | Public developer API was shut down in 2022; now (same corporate parent, Recruit Holdings, as Indeed) offered only via enterprise partnership with undisclosed pricing — no self-serve access exists in 2026. |
+
+Third-party paid aggregator APIs (e.g. TheirStack, OpenWeb Ninja, Mantiks) do re-package Indeed/Glassdoor data, but these are commercial scraping-as-a-service subscriptions, not public APIs — inconsistent with this project's ~$1–3/month cost profile and the direct-official-API pattern used for every other source here. Not recommended unless the cost/ToS tradeoff changes.
 
 ## Project Structure
 
@@ -204,7 +234,7 @@ hk-job-aggregator/
 │   ├── schroders_scraper.py           # Schroders — Oracle HCM REST
 │   ├── workable_scraper.py            # Capula — Workable widget API
 │   ├── arrowpoint_scraper.py          # Arrowpoint — custom Framer site scrape
-│   └── lever_scraper.py               # Lever (built, no active tokens)
+│   └── lever_scraper.py               # Lever ATS (3 companies)
 ├── models/
 │   ├── db.py                          # Supabase (PostgreSQL) interface
 │   └── schema.sql                     # PostgreSQL schema
@@ -230,7 +260,7 @@ pip install -r requirements.txt
 python seed_companies.py        # register companies in Supabase
 python test_scrapers.py --fast  # sanity check before scraping
 
-python scrape_all.py            # scrape all 28 companies
+python scrape_all.py            # scrape all 54 companies
 python matcher.py               # AI-score new jobs against CV
 python emailer.py --dry-run     # preview digest (saves digest_preview.html)
 python emailer.py               # send digest email

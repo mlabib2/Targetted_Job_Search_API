@@ -76,8 +76,8 @@ FILTER_NON_JOB = [
 BATCH_SYSTEM_PROMPT = """You are evaluating job fit for a specific candidate targeting HK hedge fund and quant trading roles.
 
 CANDIDATE PROFILE:
-- Fresh graduate: BSc Computer Science + Minor Finance & Economics, City University of Hong Kong, First Class Honors (graduating May 2026)
-- Current role: Software Engineer / Trade Desk Ops (contractor) at a HK hedge fund — trading infrastructure, market data pipelines (Bloomberg, Refinitiv), FastAPI services, PostgreSQL, AWS Lambda/EC2, CI/CD, risk/compliance layer
+- BSc Computer Science + Minor Finance & Economics, City University of Hong Kong, First Class Honors (graduated 2026)
+- Current role: Software Engineer / Trade Desk Ops (contractor) at a HK hedge fund, since Sep 2025 — trading infrastructure, market data pipelines (Bloomberg, Refinitiv), FastAPI services, PostgreSQL, AWS Lambda/EC2, CI/CD, risk/compliance layer
 - Previous: Quant Developer intern (C++ fully automated options trading on IBKR, backtesting, QuantConnect), SWE intern (FastAPI/Django), PwC analytics placement (SQL, Power BI, AWS)
 - Skills: C++, Python, SQL, FastAPI, PostgreSQL, Redis, Docker, AWS, Bloomberg, IBKR, QuantConnect, GitHub Actions
 - CFA Level I candidate (2026); based in Hong Kong
@@ -112,8 +112,8 @@ Respond ONLY with a valid JSON array, one object per job, in order:
 
 SINGLE_SYSTEM_PROMPT = """You are evaluating job fit for a specific candidate.
 
-CANDIDATE: Fresh graduate (May 2026), BSc Computer Science + Minor Finance & Economics, City University of Hong Kong, First Class Honors.
-Current: HK hedge fund SWE contractor (trading infrastructure, Bloomberg, Refinitiv, FastAPI, PostgreSQL, AWS, risk/compliance systems).
+CANDIDATE: BSc Computer Science + Minor Finance & Economics, City University of Hong Kong, First Class Honors (graduated 2026).
+Current: HK hedge fund SWE contractor since Sep 2025 (trading infrastructure, Bloomberg, Refinitiv, FastAPI, PostgreSQL, AWS, risk/compliance systems).
 Past: Quant dev intern (C++ automated options trading, IBKR, QuantConnect), SWE intern (FastAPI/Django), PwC analytics (SQL, Power BI, AWS).
 Skills: C++, Python, SQL, FastAPI, PostgreSQL, Redis, Docker, AWS, Bloomberg, QuantConnect. CFA L1 candidate. Based in HK.
 

@@ -300,6 +300,103 @@ TARGET_COMPANIES = [
         'ats_platform': 'Custom (Framer)',
         'notes': 'Asia-focused multi-strat HF (ex-Millennium Asia co-CEO, backed by Blackstone/CPPIB/Temasek), offices in HK/SG/Dubai. No ATS/API — custom Framer site, but static HTML with real job links (confirmed, not JS-only). 6 roles open incl. Quantitative Developer + Trading Application Support Engineer, confirmed July 2026. Location not reliably parseable per-role from listing page, so scraper returns all 6 regardless of filter. Scraper: arrowpoint_scraper.py.'
     },
+    {
+        'name': 'Eclipse Trading',
+        'career_url': 'https://boards.greenhouse.io/eclipsetrading',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Prop trading/market maker HQ\'d in Hong Kong (Chicago is the satellite office) — Greenhouse token: eclipsetrading. 15 of 18 open roles are HK confirmed July 2026 (Options Trader, Low Latency C++ Engineer, Junior Trading Analyst, etc.).'
+    },
+    {
+        'name': 'Da Vinci Trading',
+        'career_url': 'https://boards.greenhouse.io/davinciderivatives',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Derivatives market maker, offices incl. Amsterdam/Miami/Mumbai/HK — Greenhouse token: davinciderivatives. 1 HK job confirmed July 2026 (Experienced Quant, of 11 total postings).'
+    },
+    {
+        'name': 'Amber Group',
+        'career_url': 'https://jobs.lever.co/ambergroup',
+        'ats_platform': 'Lever',
+        'notes': 'HK-founded crypto/digital-asset trading firm — Lever token: ambergroup. 2 HK jobs confirmed July 2026 (Blockchain Developer - Platform Trading, Quant Researcher - Statistical Arbitrage). First active Lever integration in this project.'
+    },
+    {
+        'name': 'Mako Trading',
+        'career_url': 'https://boards.greenhouse.io/mako',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Options market maker — Greenhouse token: mako, board confirmed working. 0 HK jobs as of July 2026; Mako\'s own office-locations page (mako.com) currently lists London/Dublin/Amsterdam/Singapore/Sydney/Brisbane/Chengdu — Hong Kong is NOT on that list despite older secondary sources claiming an HK office. Kept seeded for future-proofing in case an HK role appears; not expected to yield jobs soon.'
+    },
+    {
+        'name': 'Vatic Labs',
+        'career_url': 'https://job-boards.greenhouse.io/vaticlabs',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Quant trading firm — Greenhouse token: vaticlabs, board confirmed working. 0 HK jobs as of July 2026; open roles are New York/Abu Dhabi/Singapore only, no Hong Kong office found on vaticlabs.ai. Kept seeded for future-proofing only.'
+    },
+    # New additions — May 2026, from personal target-company list gap-check
+    {
+        'name': 'GSA Capital',
+        'career_url': 'https://boards.greenhouse.io/gsacapital',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Quant hedge fund — Greenhouse token: gsacapital, board confirmed working. 9 jobs, all London/New York, 0 HK as of May 2026 — incl. "Software Developer" (London). Scraped with London filter (GREENHOUSE_LOCATION_OVERRIDES).'
+    },
+    {
+        'name': 'Allston Trading',
+        'career_url': 'https://apply.workable.com/allston-trading/',
+        'ats_platform': 'Workable',
+        'notes': 'Chicago prop trading firm — Workable token: allston-trading, board confirmed working (name matches exactly). 0 jobs open as of May 2026; no Hong Kong office evidence found. Kept seeded for future-proofing only.'
+    },
+    {
+        'name': 'Wolverine Trading',
+        'career_url': 'https://apply.workable.com/wolverine/',
+        'ats_platform': 'Workable',
+        'notes': 'Chicago prop trading firm — Workable token: wolverine (board returns name="Wolverine", lower-confidence identity match but no jobs currently open so no false-positive risk). 0 jobs open as of May 2026; no Hong Kong office evidence found. Kept seeded for future-proofing only.'
+    },
+    {
+        'name': 'Quantbox Research',
+        'career_url': 'https://apply.workable.com/quantbox/',
+        'ats_platform': 'Workable',
+        'notes': 'Prop trading/HFT firm — Workable token: quantbox (board returns name="QuantBox"). 0 jobs open as of May 2026; no Hong Kong office evidence found. Kept seeded for future-proofing only.'
+    },
+    {
+        'name': 'Eagle Seven',
+        'career_url': 'https://apply.workable.com/eagle-seven/',
+        'ats_platform': 'Workable',
+        'notes': 'Chicago prop trading firm — Workable token: eagle-seven, board confirmed working (name matches exactly). 5 jobs open as of May 2026 (Algorithmic Trader, Energy Trader, Junior Trader, Senior Software Developer, Technology Operations Engineer) — all Chicago-based, no Hong Kong office evidence found. Kept seeded for future-proofing only.'
+    },
+    {
+        'name': 'Maverick Derivatives',
+        'career_url': 'https://boards.greenhouse.io/maverickderivatives',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Options market maker — Greenhouse token: maverickderivatives, board confirmed working. 2 jobs open as of May 2026 (Singapore, Amsterdam), 0 HK. Kept seeded for future-proofing only.'
+    },
+    {
+        'name': 'Geneva Trading',
+        'career_url': 'https://boards.greenhouse.io/genevatrading',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Prop trading firm — Greenhouse token: genevatrading, board confirmed working. 11 jobs open as of May 2026 (Chicago/Dublin/London incl. "OTC Oil Desk Lead" in London), 0 HK. Scraped with London filter (GREENHOUSE_LOCATION_OVERRIDES).'
+    },
+    {
+        'name': 'Epoch Capital',
+        'career_url': 'https://boards.greenhouse.io/epochcapital',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Greenhouse token: epochcapital, board confirmed working. 1 job open as of May 2026, location listed as "All", 0 HK. Kept seeded for future-proofing only.'
+    },
+    {
+        'name': 'Chicago Trading Company',
+        'career_url': 'https://boards.greenhouse.io/chicagotrading',
+        'ats_platform': 'Greenhouse',
+        'notes': 'Prop trading firm — Greenhouse token: chicagotrading, board confirmed working. 25 jobs open as of May 2026, all Chicago/New York, 0 HK. Kept seeded for future-proofing only.'
+    },
+    {
+        'name': 'Belvedere Trading',
+        'career_url': 'https://jobs.lever.co/belvederetrading',
+        'ats_platform': 'Lever',
+        'notes': 'Options trading firm — Lever token: belvederetrading, board confirmed working. 16 jobs open as of May 2026 (Chicago/Singapore/New York), 0 HK. Kept seeded for future-proofing only.'
+    },
+    {
+        'name': 'Valkyrie Trading',
+        'career_url': 'https://jobs.lever.co/valkyrietrading',
+        'ats_platform': 'Lever',
+        'notes': 'Prop trading firm — Lever token: valkyrietrading, board confirmed working. 6 jobs open as of May 2026, all Chicago, 0 HK. Kept seeded for future-proofing only.'
+    },
 ]
 
 
